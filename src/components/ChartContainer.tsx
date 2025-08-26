@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Download, Share, Code, Copy, ExternalLink } from '@phosphor-icons/react'
-import { applyLayout, ChartType } from '@/lib/plotly-config'
+import { applyLayout, applyTraceDefaults, ChartType } from '@/lib/plotly-config'
 import { charts as chartConfig } from '@/lib/config'
 import { useUserPreferences } from '@/hooks/use-preferences'
 import { toast } from 'sonner'
@@ -43,6 +43,9 @@ export function ChartContainer({
   
   // Calculate final layout with applied config
   const finalLayout = applyLayout(chartType, layout, overrides)
+  
+  // Apply trace defaults to data
+  const finalData = applyTraceDefaults(data, chartType)
   
   // Generate embed code
   const embedCode = `<iframe src="${window.location.origin}/embed/chart/${reportId}/${chartId}" width="800" height="600" frameborder="0"></iframe>`
@@ -172,7 +175,7 @@ export function ChartContainer({
       <CardContent>
         <Plot
           ref={plotRef}
-          data={data}
+          data={finalData}
           layout={finalLayout}
           config={{
             displayModeBar: true,

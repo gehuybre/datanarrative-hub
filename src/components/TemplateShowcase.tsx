@@ -119,7 +119,7 @@ export function TemplateShowcase({ className = '' }: TemplateShowcaseProps) {
           <div className="bg-muted rounded-lg p-4 font-mono text-sm">
             <div className="text-accent font-semibold mb-2">// Template Application</div>
             <div className="text-muted-foreground">
-              <span className="text-foreground">applyLayout</span>(figure, <span className="text-primary">'line'</span>, &#123;
+              <span className="text-foreground">applyLayout</span>(<span className="text-primary">'line'</span>, baseLayout, &#123;
             </div>
             <div className="ml-4 text-muted-foreground">
               title: <span className="text-primary">'Custom Chart Title'</span>,

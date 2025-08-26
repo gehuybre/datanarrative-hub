@@ -196,6 +196,17 @@ export type ChartType = keyof typeof CHART_TYPE_LAYOUTS
 export type PlotlyLayout = typeof BASE_LAYOUT
 export type ChartTypeConfig = typeof CHART_TYPE_LAYOUTS
 
+// Function to apply trace defaults to data
+export function applyTraceDefaults(data: any[], chartType: ChartType) {
+  if (!CHART_TYPE_LAYOUTS[chartType]?.trace || !data) {
+    return data
+  }
+  
+  return data.map((trace: any) => 
+    deepMerge(CHART_TYPE_LAYOUTS[chartType].trace, trace)
+  )
+}
+
 // Deep merge utility for combining layouts
 function deepMerge(target: any, source: any): any {
   const result = { ...target }
@@ -211,10 +222,10 @@ function deepMerge(target: any, source: any): any {
   return result
 }
 
-// Main layout application function
+// Main layout application function - returns final layout for use in components
 export function applyLayout(
-  fig: any,
   chartType: ChartType,
+  baseLayout: any = {},
   overrides: Partial<PlotlyLayout> = {}
 ) {
   // Start with base layout
@@ -225,11 +236,23 @@ export function applyLayout(
     finalLayout = deepMerge(finalLayout, CHART_TYPE_LAYOUTS[chartType].layout)
   }
   
+  // Apply provided base layout
+  finalLayout = deepMerge(finalLayout, baseLayout)
+  
   // Apply local overrides
   finalLayout = deepMerge(finalLayout, overrides)
   
-  // Apply to figure
-  fig.layout = finalLayout
+  return finalLayout
+}
+
+// Alternative function for applying layout directly to a figure object
+export function applyLayoutToFigure(
+  fig: any,
+  chartType: ChartType,
+  overrides: Partial<PlotlyLayout> = {}
+) {
+  // Apply layout
+  fig.layout = applyLayout(chartType, fig.layout || {}, overrides)
   
   // Apply chart type specific trace defaults
   if (CHART_TYPE_LAYOUTS[chartType]?.trace && fig.data) {
