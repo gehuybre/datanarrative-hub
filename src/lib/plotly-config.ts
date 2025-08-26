@@ -238,9 +238,37 @@ export function applyTraceDefaults(data: any[], chartType: ChartType) {
     return data
   }
   
-  return data.map((trace: any) => 
-    deepMerge(CHART_TYPE_LAYOUTS[chartType].trace, trace)
-  )
+  const themeColors = getCSSColorValues()
+  
+  return data.map((trace: any, index: number) => {
+    let traceDefaults = { ...CHART_TYPE_LAYOUTS[chartType].trace }
+    
+    // Apply Aurora Borealis colors based on chart type
+    if (chartType === 'bar' || chartType === 'histogram') {
+      traceDefaults.marker = {
+        ...traceDefaults.marker,
+        color: trace.marker?.color || themeColors.chartColors[index % themeColors.chartColors.length]
+      }
+    } else if (chartType === 'line' || chartType === 'scatter') {
+      traceDefaults.marker = {
+        ...traceDefaults.marker,
+        color: trace.marker?.color || themeColors.chartColors[index % themeColors.chartColors.length]
+      }
+      if (chartType === 'line') {
+        traceDefaults.line = {
+          ...traceDefaults.line,
+          color: trace.line?.color || themeColors.chartColors[index % themeColors.chartColors.length]
+        }
+      }
+    } else if (chartType === 'pie') {
+      traceDefaults.marker = {
+        ...traceDefaults.marker,
+        colors: trace.marker?.colors || themeColors.chartColors
+      }
+    }
+    
+    return deepMerge(traceDefaults, trace)
+  })
 }
 
 // Deep merge utility for combining layouts
@@ -287,14 +315,15 @@ export function applyLayoutToFigure(
   chartType: ChartType,
   overrides: Partial<ReturnType<typeof createBaseLayout>> = {}
 ) {
-  // Apply layout
-  fig.layout = applyLayout(chartType, fig.layout || {}, overrides)
+  // Apply layout with template
+  fig.layout = applyLayout(chartType, fig.layout || {}, {
+    template: 'aurora_borealis',
+    ...overrides
+  })
   
-  // Apply chart type specific trace defaults
-  if (CHART_TYPE_LAYOUTS[chartType]?.trace && fig.data) {
-    fig.data = fig.data.map((trace: any) => 
-      deepMerge(CHART_TYPE_LAYOUTS[chartType].trace, trace)
-    )
+  // Apply chart type specific trace defaults with Aurora colors
+  if (fig.data) {
+    fig.data = applyTraceDefaults(fig.data, chartType)
   }
   
   return fig
@@ -318,15 +347,58 @@ export function registerAuroraBorealisTemplate() {
     
     // Create template with current theme colors
     const currentLayout = createBaseLayout()
+    const themeColors = getCSSColorValues()
+    
     const template = {
-      layout: currentLayout,
+      layout: {
+        ...currentLayout,
+        // Ensure colorway is always applied
+        colorway: themeColors.chartColors
+      },
       data: {
-        scatter: [CHART_TYPE_LAYOUTS.scatter.trace],
-        bar: [CHART_TYPE_LAYOUTS.bar.trace], 
-        line: [CHART_TYPE_LAYOUTS.line.trace],
-        pie: [CHART_TYPE_LAYOUTS.pie.trace],
+        scatter: [{ 
+          ...CHART_TYPE_LAYOUTS.scatter.trace,
+          marker: { 
+            ...CHART_TYPE_LAYOUTS.scatter.trace.marker,
+            colorscale: [
+              [0, themeColors.chartColors[0]],
+              [0.2, themeColors.chartColors[1]], 
+              [0.4, themeColors.chartColors[2]],
+              [0.6, themeColors.chartColors[3]],
+              [0.8, themeColors.chartColors[4]],
+              [1, themeColors.chartColors[5]]
+            ]
+          }
+        }],
+        bar: [{ 
+          ...CHART_TYPE_LAYOUTS.bar.trace,
+          marker: {
+            ...CHART_TYPE_LAYOUTS.bar.trace.marker,
+            color: themeColors.chartColors[0]
+          }
+        }], 
+        line: [{ 
+          ...CHART_TYPE_LAYOUTS.line.trace,
+          line: {
+            ...CHART_TYPE_LAYOUTS.line.trace.line,
+            color: themeColors.chartColors[0]
+          }
+        }],
+        pie: [{ 
+          ...CHART_TYPE_LAYOUTS.pie.trace,
+          marker: {
+            ...CHART_TYPE_LAYOUTS.pie.trace.marker,
+            colors: themeColors.chartColors
+          }
+        }],
         heatmap: [CHART_TYPE_LAYOUTS.heatmap.trace],
-        histogram: [CHART_TYPE_LAYOUTS.histogram.trace]
+        histogram: [{ 
+          ...CHART_TYPE_LAYOUTS.histogram.trace,
+          marker: {
+            ...CHART_TYPE_LAYOUTS.histogram.trace.marker,
+            color: themeColors.chartColors[0]
+          }
+        }]
       }
     }
     

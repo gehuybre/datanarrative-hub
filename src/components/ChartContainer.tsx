@@ -41,7 +41,7 @@ export function ChartContainer({
   const { preferences } = useUserPreferences()
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
   
-  // Register Aurora Borealis template on mount
+  // Register Aurora Borealis template on mount and apply to all charts
   useEffect(() => {
     // Wait a bit for Plotly to be fully loaded, then register template
     const timer = setTimeout(() => {
@@ -51,10 +51,13 @@ export function ChartContainer({
     return () => clearTimeout(timer)
   }, [])
   
-  // Calculate final layout with applied config
-  const finalLayout = applyLayout(chartType, layout, overrides)
+  // Calculate final layout with applied config and template
+  const finalLayout = applyLayout(chartType, layout, {
+    template: 'aurora_borealis',
+    ...overrides
+  })
   
-  // Apply trace defaults to data
+  // Apply trace defaults to data with Aurora colors
   const finalData = applyTraceDefaults(data, chartType)
   
   // Generate embed code
@@ -231,6 +234,8 @@ export function ChartContainer({
                 width: 1200,
                 scale: 2
               },
+              // Ensure template is applied
+              plotlyServerURL: undefined,
               ...config
             }}
             className="w-full"

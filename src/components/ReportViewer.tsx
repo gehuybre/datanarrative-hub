@@ -8,6 +8,7 @@ import { ChartContainer } from '@/components/ChartContainer'
 import { DataTable } from '@/components/DataTable'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { toast } from 'sonner'
+import { colors } from '@/lib/colors'
 import { 
   loadReportConfig, 
   loadReportContent, 
@@ -105,7 +106,16 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
       )
     }
 
-    // Convert chart config to Plotly data
+    // Convert chart config to Plotly data with Aurora Borealis colors
+    const auroraColors = [
+      colors.chart.primary,    // Aurora green
+      colors.chart.secondary,  // Aurora purple
+      colors.chart.tertiary,   // Forest green
+      colors.chart.quaternary, // Magenta aurora
+      colors.chart.quinary,    // Aurora yellow
+      colors.chart.senary      // Icy blue
+    ]
+    
     const plotlyData = (() => {
       switch (chartConfig.type) {
         case 'line':
@@ -115,7 +125,19 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
             type: 'scatter',
             mode: 'lines+markers',
             name: chartConfig.config.y,
-            line: { shape: 'spline' }
+            line: { 
+              shape: 'spline',
+              color: auroraColors[0],
+              width: 3
+            },
+            marker: {
+              color: auroraColors[0],
+              size: 6,
+              line: {
+                color: 'white',
+                width: 1
+              }
+            }
           }]
         
         case 'bar':
@@ -123,7 +145,14 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
             x: csvData.data.map(row => row[chartConfig.config.x!]),
             y: csvData.data.map(row => row[chartConfig.config.y!]),
             type: 'bar',
-            name: chartConfig.config.y
+            name: chartConfig.config.y,
+            marker: {
+              color: auroraColors[0],
+              line: {
+                color: 'transparent',
+                width: 0
+              }
+            }
           }]
         
         case 'scatter':
@@ -133,6 +162,15 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
             type: 'scatter',
             mode: 'markers',
             name: chartConfig.title,
+            marker: {
+              color: auroraColors[0],
+              size: 8,
+              opacity: 0.8,
+              line: {
+                color: 'white',
+                width: 1
+              }
+            },
             text: chartConfig.config.text ? csvData.data.map(row => row[chartConfig.config.text!]) : undefined,
             hovertemplate: chartConfig.config.text ? 
               `<b>${chartConfig.config.text}:</b> %{text}<br><b>${chartConfig.config.x}:</b> %{x}<br><b>${chartConfig.config.y}:</b> %{y}<extra></extra>` : 
@@ -146,7 +184,18 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
             type: 'pie',
             hole: chartConfig.config.hole || 0,
             textinfo: 'label+percent',
-            textposition: 'auto'
+            textposition: 'auto',
+            marker: {
+              colors: auroraColors,
+              line: {
+                color: 'white',
+                width: 2
+              }
+            },
+            textfont: {
+              color: 'white',
+              size: 12
+            }
           }]
         
         default:
@@ -159,8 +208,9 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
         title={chartConfig.title}
         data={plotlyData}
         layout={{
-          title: chartConfig.title,
-          ...chartConfig.config
+          ...chartConfig.config,
+          // Remove title from layout since it's handled by ChartContainer
+          title: undefined
         }}
         chartType={chartConfig.type}
         csvData={csvRaw}
