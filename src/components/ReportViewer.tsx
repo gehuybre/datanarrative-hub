@@ -11,12 +11,12 @@ import { toast } from 'sonner'
 import { 
   loadReportConfig, 
   loadReportContent, 
-  loadCSVData,
   ReportConfig,
   ChartConfig,
   TableConfig,
   ParsedCSVData
 } from '@/lib/contentManager'
+import { loadCSVDataFromMap, loadRawCSVFromMap } from '@/lib/dataLoader'
 
 interface ReportViewerProps {
   reportId: string
@@ -54,16 +54,16 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
         const csvRaw: Record<string, string> = {}
         
         for (const dataFile of config.dataFiles) {
-          const data = await loadCSVData(reportId, dataFile.filename)
+          // Use the new map-based loader
+          const data = await loadCSVDataFromMap(reportId, dataFile.filename)
           if (data) {
             csvData[dataFile.filename] = data
-            // Load raw CSV for downloads
-            try {
-              const rawModule = await import(`@/content/reports/${reportId}/data/${dataFile.filename}?raw`)
-              csvRaw[dataFile.filename] = rawModule.default || rawModule
-            } catch (error) {
-              console.error(`Failed to load raw CSV ${dataFile.filename}:`, error)
-            }
+          }
+          
+          // Load raw CSV for downloads
+          const rawText = await loadRawCSVFromMap(reportId, dataFile.filename)
+          if (rawText) {
+            csvRaw[dataFile.filename] = rawText
           }
         }
         
@@ -97,7 +97,11 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
     const csvRaw = csvRawCache[chartConfig.dataFile]
     
     if (!csvData || !csvRaw) {
-      return <div className="text-body-medium text-muted-foreground">Chart data not available</div>
+      return (
+        <div className="text-body-medium text-muted-foreground">
+          Chart data not available for {chartConfig.dataFile}
+        </div>
+      )
     }
 
     // Convert chart config to Plotly data
@@ -172,7 +176,11 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
     const csvRaw = csvRawCache[tableConfig.dataFile]
     
     if (!csvData || !csvRaw) {
-      return <div className="text-body-medium text-muted-foreground">Table data not available</div>
+      return (
+        <div className="text-body-medium text-muted-foreground">
+          Table data not available for {tableConfig.dataFile}
+        </div>
+      )
     }
 
     return (

@@ -51,18 +51,26 @@ export interface ParsedCSVData {
 // Parse CSV helper
 export function parseCSV(csvText: string): ParsedCSVData {
   const lines = csvText.trim().split('\n')
+  
+  if (lines.length < 2) {
+    console.error('CSV must have at least a header and one data row')
+    return { headers: [], data: [] }
+  }
+  
   const headers = lines[0].split(',').map(h => h.trim())
-  const data = lines.slice(1).map(line => {
+  
+  const data = lines.slice(1).map((line, index) => {
     const values = line.split(',').map(v => v.trim())
     const row: any = {}
-    headers.forEach((header, index) => {
-      const value = values[index] || ''
+    headers.forEach((header, headerIndex) => {
+      const value = values[headerIndex] || ''
       // Try to parse as number
       const numValue = parseFloat(value)
       row[header] = isNaN(numValue) ? value : numValue
     })
     return row
   })
+  
   return { headers, data }
 }
 
@@ -91,9 +99,19 @@ export async function loadReportContent(reportId: string): Promise<string | null
 // Load CSV data
 export async function loadCSVData(reportId: string, filename: string): Promise<ParsedCSVData | null> {
   try {
+    console.log(`Attempting to load CSV: ${filename} for report: ${reportId}`)
     const csvModule = await import(`@/content/reports/${reportId}/data/${filename}?raw`)
+    console.log('CSV module loaded:', csvModule)
     const csvText = csvModule.default || csvModule
-    return parseCSV(csvText)
+    
+    if (!csvText || typeof csvText !== 'string') {
+      console.error(`CSV text is invalid for ${filename}:`, csvText)
+      return null
+    }
+    
+    const parsed = parseCSV(csvText)
+    console.log(`Successfully parsed CSV ${filename}:`, parsed)
+    return parsed
   } catch (error) {
     console.error(`Failed to load CSV data ${filename} for report ${reportId}:`, error)
     return null
