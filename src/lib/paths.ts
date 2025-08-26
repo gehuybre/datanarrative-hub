@@ -3,8 +3,7 @@ export const paths = {
   // Data paths
   data: {
     reports: '/src/data/reports',
-    csv: '/src/data/csv',
-    assets: '/src/assets'
+    csv: '/src/data/csv'
   },
   
   // API endpoints (if needed for future expansion)
@@ -24,8 +23,6 @@ export const paths = {
   
   // Asset paths
   assets: {
-    images: '/src/assets/images',
-    icons: '/src/assets/icons',
     exports: '/exports'
   }
 } as const
