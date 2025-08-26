@@ -192,50 +192,52 @@ export function ChartContainer({
         </div>
       </CardHeader>
       
-      <CardContent>
-        <Plot
-          ref={plotRef}
-          data={finalData}
-          layout={finalLayout}
-          config={{
-            displayModeBar: true,
-            displaylogo: false,
-            modeBarButtonsToRemove: ['pan2d', 'lasso2d'],
-            modeBarButtonsToAdd: [
-              {
-                name: 'Download PNG',
-                icon: {
-                  width: 857.1,
-                  height: 1000,
-                  path: 'm214 629c0 36 11 65 32 86 22 22 51 32 87 32h142c36 0 65-11 86-32 22-22 32-51 32-87v-171h-379v172z m-71-143h521v-107c0-36-11-65-32-86-22-22-51-32-87-32h-283c-36 0-65 11-86 32-22 22-32 51-32 87v106z',
-                  transform: 'matrix(1 0 0 -1 0 850)'
-                },
-                click: function(gd: any) {
-                  if (window.Plotly) {
-                    window.Plotly.downloadImage(gd, {
-                      format: 'png',
-                      width: 1200,
-                      height: 800,
-                      filename: 'chart'
-                    })
+      <CardContent className="p-0">
+        <div className="w-full min-h-[400px] relative">
+          <Plot
+            ref={plotRef}
+            data={finalData}
+            layout={finalLayout}
+            config={{
+              displayModeBar: true,
+              displaylogo: false,
+              modeBarButtonsToRemove: ['pan2d', 'lasso2d'],
+              modeBarButtonsToAdd: [
+                {
+                  name: 'Download PNG',
+                  icon: {
+                    width: 857.1,
+                    height: 1000,
+                    path: 'm214 629c0 36 11 65 32 86 22 22 51 32 87 32h142c36 0 65-11 86-32 22-22 32-51 32-87v-171h-379v172z m-71-143h521v-107c0-36-11-65-32-86-22-22-51-32-87-32h-283c-36 0-65 11-86 32-22 22-32 51-32 87v106z',
+                    transform: 'matrix(1 0 0 -1 0 850)'
+                  },
+                  click: function(gd: any) {
+                    if (window.Plotly) {
+                      window.Plotly.downloadImage(gd, {
+                        format: 'png',
+                        width: 1200,
+                        height: 800,
+                        filename: 'chart'
+                      })
+                    }
                   }
                 }
-              }
-            ],
-            responsive: true,
-            toImageButtonOptions: {
-              format: 'png',
-              filename: title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_chart',
-              height: 800,
-              width: 1200,
-              scale: 2
-            },
-            ...config
-          }}
-          className="w-full h-full"
-          useResizeHandler={true}
-          style={{ width: '100%', height: '100%' }}
-        />
+              ],
+              responsive: true,
+              toImageButtonOptions: {
+                format: 'png',
+                filename: title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_chart',
+                height: 800,
+                width: 1200,
+                scale: 2
+              },
+              ...config
+            }}
+            className="w-full"
+            useResizeHandler={true}
+            style={{ width: '100%', height: '400px' }}
+          />
+        </div>
       </CardContent>
     </Card>
   )

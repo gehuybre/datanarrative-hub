@@ -233,85 +233,87 @@ export function DataTable({
         </div>
       </CardHeader>
       
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {displayColumns.map((column, index) => (
-                  <TableHead 
-                    key={column} 
-                    className={`text-label-medium font-medium ${enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''}`}
-                    onClick={enableSorting ? () => handleHeaderClick(column) : undefined}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>{displayColumnTitles[index] || column}</span>
-                      {enableSorting && (
-                        <div className="flex flex-col">
-                          {sortColumn === column ? (
-                            sortDirection === 'asc' ? (
-                              <ArrowUp className="w-3 h-3" />
-                            ) : sortDirection === 'desc' ? (
-                              <ArrowDown className="w-3 h-3" />
+      <CardContent className="p-0">
+        <div className="p-6 pt-0">
+          <div className="relative overflow-hidden rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {displayColumns.map((column, index) => (
+                    <TableHead 
+                      key={column} 
+                      className={`text-label-medium font-medium ${enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''}`}
+                      onClick={enableSorting ? () => handleHeaderClick(column) : undefined}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{displayColumnTitles[index] || column}</span>
+                        {enableSorting && (
+                          <div className="flex flex-col">
+                            {sortColumn === column ? (
+                              sortDirection === 'asc' ? (
+                                <ArrowUp className="w-3 h-3" />
+                              ) : sortDirection === 'desc' ? (
+                                <ArrowDown className="w-3 h-3" />
+                              ) : (
+                                <ArrowUpDown className="w-3 h-3 opacity-50" />
+                              )
                             ) : (
-                              <ArrowUpDown className="w-3 h-3 opacity-50" />
-                            )
-                          ) : (
-                            <ArrowUpDown className="w-3 h-3 opacity-30" />
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedData.map((row, rowIndex) => (
-                <TableRow key={rowIndex}>
-                  {displayColumns.map((column) => (
-                    <TableCell key={column} className="text-body-medium">
-                      {typeof row[column] === 'number' 
-                        ? row[column].toLocaleString() 
-                        : row[column]
-                      }
-                    </TableCell>
+                              <ArrowUpDown className="w-3 h-3 opacity-30" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 pt-4 border-t">
-            <div className="text-body-small text-muted-foreground">
-              Showing {startIndex + 1} to {Math.min(endIndex, processedData.length)} of {processedData.length} entries
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span className="text-body-small">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.map((row, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    {displayColumns.map((column) => (
+                      <TableCell key={column} className="text-body-medium">
+                        {typeof row[column] === 'number' 
+                          ? row[column].toLocaleString() 
+                          : row[column]
+                        }
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
-        )}
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t">
+              <div className="text-body-small text-muted-foreground">
+                Showing {startIndex + 1} to {Math.min(endIndex, processedData.length)} of {processedData.length} entries
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="text-body-small">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   )

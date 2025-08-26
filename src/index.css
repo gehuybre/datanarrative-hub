@@ -238,6 +238,8 @@
   @apply bg-card rounded-lg p-6;
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.2s ease-in-out;
+  overflow: hidden;
+  contain: layout style;
 }
 
 .chart-container:hover {
@@ -246,6 +248,15 @@
 
 .chart-container .plotly-graph-div {
   @apply rounded-md;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Table container styling */
+.chart-container .overflow-x-auto {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 body{
