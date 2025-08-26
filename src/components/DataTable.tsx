@@ -1,24 +1,15 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Download, Share, Copy, ExternalLink, Funnel, X, ArrowUpDown, ArrowUp, ArrowDown } from '@phosphor-icons/react'
+import { Download, Share, Copy, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import { ParsedCSVData } from '@/lib/contentManager'
 
 type SortDirection = 'asc' | 'desc' | null
-
-interface ColumnFilter {
-  column: string
-  value: string
-  active: boolean
-}
 
 interface DataTableProps {
   title: string
@@ -30,8 +21,6 @@ interface DataTableProps {
   className?: string
   reportId?: string
   tableId?: string
-  enableFiltering?: boolean
-  enableSorting?: boolean
   pageSize?: number
 }
 
@@ -45,13 +34,10 @@ export function DataTable({
   className,
   reportId,
   tableId,
-  enableFiltering = true,
-  enableSorting = true,
   pageSize = 50
 }: DataTableProps) {
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
-  const [showFilterPanel, setShowFilterPanel] = useState(false)
-  const [filters, setFilters] = useState<ColumnFilter[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -64,14 +50,14 @@ export function DataTable({
   const processedData = useMemo(() => {
     let filtered = [...data.data]
     
-    // Apply filters
-    filters.forEach(filter => {
-      if (filter.active && filter.value.trim()) {
-        filtered = filtered.filter(row => 
-          String(row[filter.column] || '').toLowerCase().includes(filter.value.toLowerCase())
+    // Apply basic search filter
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(row => 
+        Object.values(row).some(value => 
+          String(value || '').toLowerCase().includes(searchTerm.toLowerCase())
         )
-      }
-    })
+      )
+    }
     
     // Apply sorting
     if (sortColumn && sortDirection) {
@@ -100,7 +86,7 @@ export function DataTable({
     }
     
     return filtered
-  }, [data.data, filters, sortColumn, sortDirection])
+  }, [data.data, searchTerm, sortColumn, sortDirection])
 
   // Pagination
   const totalPages = Math.ceil(processedData.length / pageSize)
@@ -110,8 +96,6 @@ export function DataTable({
 
   // Handle column header click for sorting
   const handleHeaderClick = useCallback((column: string) => {
-    if (!enableSorting) return
-    
     if (sortColumn === column) {
       if (sortDirection === 'asc') {
         setSortDirection('desc')
@@ -125,34 +109,7 @@ export function DataTable({
       setSortColumn(column)
       setSortDirection('asc')
     }
-  }, [sortColumn, sortDirection, enableSorting])
-
-  // Handle filter changes
-  const handleFilterChange = useCallback((column: string, value: string, active: boolean) => {
-    setFilters(prev => {
-      const existing = prev.find(f => f.column === column)
-      if (existing) {
-        return prev.map(f => 
-          f.column === column ? { ...f, value, active } : f
-        )
-      } else {
-        return [...prev, { column, value, active }]
-      }
-    })
-    setCurrentPage(1) // Reset to first page when filtering
-  }, [])
-
-  // Reset filters
-  const resetFilters = useCallback(() => {
-    setFilters([])
-    setCurrentPage(1)
-  }, [])
-
-  // Get unique values for a column (for filter suggestions)
-  const getUniqueValues = useCallback((column: string) => {
-    const values = data.data.map(row => row[column]).filter(val => val != null && val !== '')
-    return [...new Set(values)].sort().slice(0, 10) // Limit to 10 suggestions
-  }, [data.data])
+  }, [sortColumn, sortDirection])
   
   // Generate embed code
   const embedCode = `<iframe 
@@ -191,96 +148,12 @@ export function DataTable({
     window.open(url, '_blank')
   }
 
-  // Render filter controls
-  const renderFilterControls = () => {
-    if (!enableFiltering) return null
-
-    return (
-      <div className="space-y-4 border-t pt-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-title-small font-medium">Column Filters</h4>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={resetFilters}
-            className="text-body-small"
-          >
-            Reset All
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {displayColumns.map((column) => {
-            const filter = filters.find(f => f.column === column)
-            const uniqueValues = getUniqueValues(column)
-            
-            return (
-              <div key={column} className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={filter?.active || false}
-                    onCheckedChange={(checked) => 
-                      handleFilterChange(column, filter?.value || '', !!checked)
-                    }
-                  />
-                  <label className="text-label-medium font-medium">
-                    {displayColumnTitles[displayColumns.indexOf(column)] || column}
-                  </label>
-                </div>
-                {filter?.active && (
-                  <div className="space-y-2">
-                    <Input
-                      value={filter.value}
-                      onChange={(e) => 
-                        handleFilterChange(column, e.target.value, true)
-                      }
-                      placeholder={`Filter ${column}...`}
-                      className="text-body-small"
-                    />
-                    {uniqueValues.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {uniqueValues.slice(0, 5).map((value) => (
-                          <Button
-                            key={value}
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleFilterChange(column, String(value), true)}
-                            className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            {String(value)}
-                          </Button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <Card className={`chart-container ${className || ''}`}>
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between">
           <CardTitle className="text-title-large">{title}</CardTitle>
           <div className="flex items-center gap-2">
-            {/* Filter toggle */}
-            {enableFiltering && (
-              <Button
-                variant={showFilterPanel ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowFilterPanel(!showFilterPanel)}
-                className="text-label-medium"
-              >
-                <Funnel className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-            )}
-            
             <Button
               variant="outline"
               size="sm"
@@ -331,8 +204,7 @@ export function DataTable({
                     </Button>
                   </div>
                   <div className="text-body-small text-muted-foreground">
-                    This embed code will display the table with full interactivity and filtering. 
-                    The table is responsive and includes download functionality.
+                    This embed code will display the table with basic search and sort functionality.
                   </div>
                 </div>
               </DialogContent>
@@ -340,24 +212,24 @@ export function DataTable({
           </div>
         </div>
         
-        {/* Status badges */}
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-label-small">
-            {processedData.length} of {data.data.length} rows
-          </Badge>
-          <Badge variant="secondary" className="text-label-small">
-            {displayColumns.length} columns
-          </Badge>
-          {filters.some(f => f.active) && (
-            <Badge variant="outline" className="text-label-small">
-              {filters.filter(f => f.active).length} filters active
-            </Badge>
-          )}
+        {/* Search and status */}
+        <div className="flex items-center justify-between gap-4">
+          <Input
+            placeholder="Search all columns..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+              setCurrentPage(1)
+            }}
+            className="max-w-sm"
+          />
+          <div className="flex items-center gap-2">
+            <div className="text-body-small text-muted-foreground">
+              {processedData.length} of {data.data.length} rows
+            </div>
+          </div>
         </div>
       </CardHeader>
-      
-      {/* Filter panel */}
-      {showFilterPanel && renderFilterControls()}
       
       <CardContent>
         <div className="overflow-x-auto">

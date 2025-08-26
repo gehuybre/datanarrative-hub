@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -7,7 +7,6 @@ import { ArrowLeft, Calendar, Clock, Download, Share } from '@phosphor-icons/rea
 import { ChartContainer } from '@/components/ChartContainer'
 import { DataTable } from '@/components/DataTable'
 import { MarkdownRenderer } from '@/components/MarkdownRenderer'
-import { GlobalFilterPanel, GlobalFilterConfig, GlobalFilterState } from '@/components/GlobalFilterPanel'
 import { toast } from 'sonner'
 import { 
   loadReportConfig, 
@@ -30,126 +29,10 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
   const [csvDataCache, setCsvDataCache] = useState<Record<string, ParsedCSVData>>({})
   const [csvRawCache, setCsvRawCache] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
-  const [globalFilters, setGlobalFilters] = useState<GlobalFilterState>({})
-
-  // Generate global filter configurations from all data
-  const globalFilterConfigs = useMemo((): GlobalFilterConfig[] => {
-    if (!report || Object.keys(csvDataCache).length === 0) return []
-
-    const allHeaders = new Set<string>()
-    const columnData: Record<string, any[]> = {}
-
-    // Collect all unique headers and their data
-    Object.values(csvDataCache).forEach(csvData => {
-      csvData.headers.forEach(header => {
-        allHeaders.add(header)
-        if (!columnData[header]) {
-          columnData[header] = []
-        }
-        csvData.data.forEach(row => {
-          if (row[header] != null) {
-            columnData[header].push(row[header])
-          }
-        })
-      })
-    })
-
-    const configs: GlobalFilterConfig[] = []
-
-    // Generate filter configs for common column patterns
-    allHeaders.forEach(header => {
-      const values = columnData[header]
-      if (values.length === 0) return
-
-      // Categorical filters for common category columns
-      if (header.toLowerCase().includes('category') || 
-          header.toLowerCase().includes('segment') ||
-          header.toLowerCase().includes('type') ||
-          header.toLowerCase().includes('status')) {
-        const uniqueValues = [...new Set(values)].sort()
-        if (uniqueValues.length > 1 && uniqueValues.length <= 20) {
-          configs.push({
-            key: `global-${header}`,
-            label: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, ' '),
-            type: 'categorical',
-            column: header,
-            values: uniqueValues,
-            description: `Filter all charts and tables by ${header}`
-          })
-        }
-      }
-      // Numerical filters for metrics
-      else if (header.toLowerCase().includes('percentage') ||
-               header.toLowerCase().includes('count') ||
-               header.toLowerCase().includes('revenue') ||
-               header.toLowerCase().includes('value') ||
-               header.toLowerCase().includes('rate') ||
-               header.toLowerCase().includes('cost') ||
-               header.toLowerCase().includes('size')) {
-        const numericValues = values.map(v => parseFloat(v)).filter(v => !isNaN(v))
-        if (numericValues.length > 0) {
-          const min = Math.min(...numericValues)
-          const max = Math.max(...numericValues)
-          if (min !== max) {
-            configs.push({
-              key: `global-${header}`,
-              label: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, ' '),
-              type: 'numerical',
-              column: header,
-              range: [min, max],
-              description: `Filter all charts and tables by ${header} range`
             })
           }
         }
       }
-    })
-
-    return configs
-  }, [report, csvDataCache])
-
-  // Apply global filters to data
-  const applyGlobalFilters = useCallback((data: any[]) => {
-    let filtered = [...data]
-
-    Object.entries(globalFilters).forEach(([key, filter]) => {
-      if (!filter.active) return
-
-      const config = globalFilterConfigs.find(c => c.key === key)
-      if (!config) return
-
-      switch (filter.type) {
-        case 'categorical':
-          if (filter.value.length > 0) {
-            filtered = filtered.filter(item => 
-              filter.value.includes(item[config.column])
-            )
-          }
-          break
-        case 'numerical':
-          const [min, max] = filter.value
-          filtered = filtered.filter(item => {
-            const val = parseFloat(item[config.column])
-            return !isNaN(val) && val >= min && val <= max
-          })
-          break
-        case 'text':
-          if (filter.value.trim()) {
-            filtered = filtered.filter(item => 
-              String(item[config.column] || '').toLowerCase().includes(filter.value.toLowerCase())
-            )
-          }
-          break
-      }
-    })
-
-    return filtered
-  }, [globalFilters, globalFilterConfigs])
-
-  // Handle global filter changes
-  const handleGlobalFilterChange = useCallback((filters: GlobalFilterState) => {
-    setGlobalFilters(filters)
-  }, [])
-
   useEffect(() => {
     async function loadReportData() {
       setLoading(true)
@@ -224,16 +107,13 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
       )
     }
 
-    // Apply global filters to the data
-    const filteredChartData = applyGlobalFilters(csvData.data)
-
-    // Convert chart config to Plotly data using filtered data
+    // Convert chart config to Plotly data
     const plotlyData = (() => {
       switch (chartConfig.type) {
         case 'line':
           return [{
-            x: filteredChartData.map(row => row[chartConfig.config.x!]),
-            y: filteredChartData.map(row => row[chartConfig.config.y!]),
+            x: csvData.data.map(row => row[chartConfig.config.x!]),
+            y: csvData.data.map(row => row[chartConfig.config.y!]),
             type: 'scatter',
             mode: 'lines+markers',
             name: chartConfig.config.y,
@@ -242,20 +122,20 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
         
         case 'bar':
           return [{
-            x: filteredChartData.map(row => row[chartConfig.config.x!]),
-            y: filteredChartData.map(row => row[chartConfig.config.y!]),
+            x: csvData.data.map(row => row[chartConfig.config.x!]),
+            y: csvData.data.map(row => row[chartConfig.config.y!]),
             type: 'bar',
             name: chartConfig.config.y
           }]
         
         case 'scatter':
           return [{
-            x: filteredChartData.map(row => row[chartConfig.config.x!]),
-            y: filteredChartData.map(row => row[chartConfig.config.y!]),
+            x: csvData.data.map(row => row[chartConfig.config.x!]),
+            y: csvData.data.map(row => row[chartConfig.config.y!]),
             type: 'scatter',
             mode: 'markers',
             name: chartConfig.title,
-            text: chartConfig.config.text ? filteredChartData.map(row => row[chartConfig.config.text!]) : undefined,
+            text: chartConfig.config.text ? csvData.data.map(row => row[chartConfig.config.text!]) : undefined,
             hovertemplate: chartConfig.config.text ? 
               `<b>${chartConfig.config.text}:</b> %{text}<br><b>${chartConfig.config.x}:</b> %{x}<br><b>${chartConfig.config.y}:</b> %{y}<extra></extra>` : 
               undefined
@@ -263,8 +143,8 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
         
         case 'pie':
           return [{
-            labels: filteredChartData.map(row => row[chartConfig.config.labels!]),
-            values: filteredChartData.map(row => row[chartConfig.config.values!]),
+            labels: csvData.data.map(row => row[chartConfig.config.labels!]),
+            values: csvData.data.map(row => row[chartConfig.config.values!]),
             type: 'pie',
             hole: chartConfig.config.hole || 0,
             textinfo: 'label+percent',
@@ -276,49 +156,10 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
       }
     })()
 
-    // Configure individual chart filters (excluding global filter columns)
-    const filterConfigs = (() => {
-      const configs = []
-      const globalColumns = globalFilterConfigs.map(c => c.column)
-      
-      // Add filters for columns not covered by global filters
-      csvData.headers.forEach(header => {
-        if (globalColumns.includes(header)) return // Skip global filter columns
-
-        if (header.toLowerCase().includes('category') || 
-            header.toLowerCase().includes('type')) {
-          const uniqueValues = [...new Set(csvData.data.map(row => row[header]))].sort()
-          if (uniqueValues.length > 1 && uniqueValues.length <= 10) {
-            configs.push({
-              column: header,
-              type: 'categorical' as const,
-              label: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, ' ')
-            })
-          }
-        }
-      })
-      
-      return configs
-    })()
-
-    // Configure drill-down for hierarchical charts
-    const drillDownConfig = (() => {
-      if (chartConfig.type === 'pie' || chartConfig.type === 'bar') {
-        return {
-          enabled: true,
-          targetColumn: chartConfig.config.x || chartConfig.config.labels || 'category',
-          groupByColumn: 'category',
-          aggregationType: 'sum' as const
-        }
-      }
-      return undefined
-    })()
-
     return (
       <ChartContainer
         title={chartConfig.title}
         data={plotlyData}
-        rawData={csvData.data}
         layout={{
           title: chartConfig.title,
           ...chartConfig.config
@@ -329,16 +170,6 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
         className="my-8"
         reportId={reportId}
         chartId={chartConfig.id}
-        enableFiltering={filterConfigs.length > 0}
-        enableDrillDown={!!drillDownConfig}
-        filterConfigs={filterConfigs}
-        drillDownConfig={drillDownConfig}
-        onFilterChange={(filters) => {
-          console.log('Chart filter changed:', filters)
-        }}
-        onDrillDown={(level, filter) => {
-          console.log('Chart drill down:', level, filter)
-        }}
       />
     )
   }
@@ -355,19 +186,10 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
       )
     }
 
-    // Apply global filters to table data
-    const filteredTableData = applyGlobalFilters(csvData.data)
-
-    // Create filtered data structure for the table
-    const filteredCsvData = {
-      ...csvData,
-      data: filteredTableData
-    }
-
     return (
       <DataTable
         title={tableConfig.title}
-        data={filteredCsvData}
+        data={csvData}
         csvData={csvRaw}
         csvFilename={tableConfig.dataFile}
         columns={tableConfig.columns}
@@ -375,8 +197,6 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
         className="my-8"
         reportId={reportId}
         tableId={tableConfig.id}
-        enableFiltering={true}
-        enableSorting={true}
         pageSize={50}
       />
     )
@@ -422,19 +242,6 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
       </div>
 
       <Separator />
-
-      {/* Global Filters */}
-      {globalFilterConfigs.length > 0 && (
-        <div className="space-y-6">
-          <GlobalFilterPanel
-            filterConfigs={globalFilterConfigs}
-            onFilterChange={handleGlobalFilterChange}
-            allData={csvDataCache}
-            className="mb-8"
-          />
-          <Separator />
-        </div>
-      )}
 
       {/* Content */}
       <div className="space-y-12">
