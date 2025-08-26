@@ -29,10 +29,7 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
   const [csvDataCache, setCsvDataCache] = useState<Record<string, ParsedCSVData>>({})
   const [csvRawCache, setCsvRawCache] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
-            })
-          }
-        }
-      }
+
   useEffect(() => {
     async function loadReportData() {
       setLoading(true)
