@@ -43,13 +43,24 @@ export function ChartContainer({
   
   // Register Aurora Borealis template on mount and apply to all charts
   useEffect(() => {
-    // Wait a bit for Plotly to be fully loaded, then register template
+    // Re-register template every time to ensure latest colors are applied
     const timer = setTimeout(() => {
       registerAuroraBorealisTemplate()
+      
+      // Force re-render of chart with updated template
+      if (plotRef.current && window.Plotly) {
+        const element = plotRef.current.el
+        if (element) {
+          // Apply template to existing plot
+          window.Plotly.relayout(element, {
+            template: 'aurora_borealis'
+          })
+        }
+      }
     }, 100)
     
     return () => clearTimeout(timer)
-  }, [])
+  }, [chartType, data, layout]) // Re-run when chart properties change
   
   // Calculate final layout with applied config and template
   const finalLayout = applyLayout(chartType, layout, {
@@ -200,7 +211,13 @@ export function ChartContainer({
           <Plot
             ref={plotRef}
             data={finalData}
-            layout={finalLayout}
+            layout={{
+              ...finalLayout,
+              // Force Aurora Borealis template
+              template: 'aurora_borealis',
+              // Ensure colorway is applied
+              colorway: finalLayout.colorway
+            }}
             config={{
               displayModeBar: true,
               displaylogo: false,
@@ -234,7 +251,7 @@ export function ChartContainer({
                 width: 1200,
                 scale: 2
               },
-              // Ensure template is applied
+              // Force template application
               plotlyServerURL: undefined,
               ...config
             }}

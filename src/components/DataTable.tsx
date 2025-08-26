@@ -235,7 +235,7 @@ export function DataTable({
       
       <CardContent className="p-0">
         <div className="p-6 pt-0">
-          <div className="relative overflow-hidden rounded-lg border">
+          <div className="overflow-x-auto relative rounded-lg border">
             <Table>
               <TableHeader>
                 <TableRow>

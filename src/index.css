@@ -240,6 +240,7 @@
   transition: box-shadow 0.2s ease-in-out;
   overflow: hidden;
   contain: layout style;
+  width: 100%;
 }
 
 .chart-container:hover {
@@ -248,6 +249,22 @@
 
 .chart-container .plotly-graph-div {
   @apply rounded-md;
+  max-width: 100%;
+  overflow: hidden;
+  width: 100% !important;
+}
+
+.chart-container .plotly {
+  width: 100% !important;
+}
+
+.chart-container .svg-container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Ensure chart content stays within container */
+.chart-container [data-title] {
   max-width: 100%;
   overflow: hidden;
 }

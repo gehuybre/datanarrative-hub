@@ -234,39 +234,89 @@ export type ChartTypeConfig = typeof CHART_TYPE_LAYOUTS
 
 // Function to apply trace defaults to data
 export function applyTraceDefaults(data: any[], chartType: ChartType) {
-  if (!CHART_TYPE_LAYOUTS[chartType]?.trace || !data) {
+  if (!data || !Array.isArray(data)) {
     return data
   }
   
   const themeColors = getCSSColorValues()
   
   return data.map((trace: any, index: number) => {
-    let traceDefaults = { ...CHART_TYPE_LAYOUTS[chartType].trace }
+    // Start with chart type defaults
+    let traceDefaults = CHART_TYPE_LAYOUTS[chartType]?.trace ? 
+      { ...CHART_TYPE_LAYOUTS[chartType].trace } : {}
     
     // Apply Aurora Borealis colors based on chart type
-    if (chartType === 'bar' || chartType === 'histogram') {
-      traceDefaults.marker = {
-        ...traceDefaults.marker,
-        color: trace.marker?.color || themeColors.chartColors[index % themeColors.chartColors.length]
-      }
-    } else if (chartType === 'line' || chartType === 'scatter') {
-      traceDefaults.marker = {
-        ...traceDefaults.marker,
-        color: trace.marker?.color || themeColors.chartColors[index % themeColors.chartColors.length]
-      }
-      if (chartType === 'line') {
+    switch (chartType) {
+      case 'bar':
+      case 'histogram':
+        // For bar charts, apply color to marker
+        traceDefaults.marker = {
+          ...traceDefaults.marker,
+          color: trace.marker?.color || themeColors.chartColors[index % themeColors.chartColors.length],
+          line: {
+            ...traceDefaults.marker?.line,
+            color: 'transparent',
+            width: 0
+          }
+        }
+        break
+        
+      case 'line':
+        // For line charts, apply color to both line and marker
         traceDefaults.line = {
           ...traceDefaults.line,
           color: trace.line?.color || themeColors.chartColors[index % themeColors.chartColors.length]
         }
-      }
-    } else if (chartType === 'pie') {
-      traceDefaults.marker = {
-        ...traceDefaults.marker,
-        colors: trace.marker?.colors || themeColors.chartColors
-      }
+        traceDefaults.marker = {
+          ...traceDefaults.marker,
+          color: trace.marker?.color || themeColors.chartColors[index % themeColors.chartColors.length],
+          line: {
+            ...traceDefaults.marker?.line,
+            color: 'white',
+            width: 1
+          }
+        }
+        break
+        
+      case 'scatter':
+        // For scatter plots, apply color to marker
+        traceDefaults.marker = {
+          ...traceDefaults.marker,
+          color: trace.marker?.color || themeColors.chartColors[index % themeColors.chartColors.length],
+          line: {
+            ...traceDefaults.marker?.line,
+            color: 'white',
+            width: 1
+          }
+        }
+        break
+        
+      case 'pie':
+        // For pie charts, apply colors array to marker
+        traceDefaults.marker = {
+          ...traceDefaults.marker,
+          colors: trace.marker?.colors || themeColors.chartColors,
+          line: {
+            ...traceDefaults.marker?.line,
+            color: 'white',
+            width: 2
+          }
+        }
+        break
+        
+      default:
+        // Default case - apply first color as fallback
+        if (!trace.marker?.color && !trace.line?.color) {
+          traceDefaults.marker = {
+            ...traceDefaults.marker,
+            color: themeColors.chartColors[index % themeColors.chartColors.length]
+          }
+        }
+        break
     }
     
+    // Deep merge trace defaults with existing trace data
+    // Existing trace data takes precedence over defaults
     return deepMerge(traceDefaults, trace)
   })
 }
@@ -352,14 +402,18 @@ export function registerAuroraBorealisTemplate() {
     const template = {
       layout: {
         ...currentLayout,
-        // Ensure colorway is always applied
-        colorway: themeColors.chartColors
+        // Ensure colorway is always applied for consistent colors across series
+        colorway: themeColors.chartColors,
+        // Set global color defaults
+        plot_bgcolor: 'transparent',
+        paper_bgcolor: themeColors.background
       },
       data: {
         scatter: [{ 
           ...CHART_TYPE_LAYOUTS.scatter.trace,
           marker: { 
             ...CHART_TYPE_LAYOUTS.scatter.trace.marker,
+            color: themeColors.chartColors[0],
             colorscale: [
               [0, themeColors.chartColors[0]],
               [0.2, themeColors.chartColors[1]], 
@@ -374,7 +428,8 @@ export function registerAuroraBorealisTemplate() {
           ...CHART_TYPE_LAYOUTS.bar.trace,
           marker: {
             ...CHART_TYPE_LAYOUTS.bar.trace.marker,
-            color: themeColors.chartColors[0]
+            color: themeColors.chartColors[0],
+            line: { color: 'transparent', width: 0 }
           }
         }], 
         line: [{ 
@@ -382,13 +437,18 @@ export function registerAuroraBorealisTemplate() {
           line: {
             ...CHART_TYPE_LAYOUTS.line.trace.line,
             color: themeColors.chartColors[0]
+          },
+          marker: {
+            ...CHART_TYPE_LAYOUTS.line.trace.marker,
+            color: themeColors.chartColors[0]
           }
         }],
         pie: [{ 
           ...CHART_TYPE_LAYOUTS.pie.trace,
           marker: {
             ...CHART_TYPE_LAYOUTS.pie.trace.marker,
-            colors: themeColors.chartColors
+            colors: themeColors.chartColors,
+            line: { color: 'white', width: 2 }
           }
         }],
         heatmap: [CHART_TYPE_LAYOUTS.heatmap.trace],
@@ -396,7 +456,8 @@ export function registerAuroraBorealisTemplate() {
           ...CHART_TYPE_LAYOUTS.histogram.trace,
           marker: {
             ...CHART_TYPE_LAYOUTS.histogram.trace.marker,
-            color: themeColors.chartColors[0]
+            color: themeColors.chartColors[0],
+            line: { color: 'white', width: 1 }
           }
         }]
       }
