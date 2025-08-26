@@ -1,8 +1,10 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import Plot from 'react-plotly.js'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Download, Share, Code } from '@phosphor-icons/react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Download, Share, Code, Copy, ExternalLink } from '@phosphor-icons/react'
 import { applyLayout, ChartType } from '@/lib/plotly-config'
 import { charts as chartConfig } from '@/lib/config'
 import { useUserPreferences } from '@/hooks/use-preferences'
@@ -18,6 +20,8 @@ interface ChartContainerProps {
   csvData?: string
   csvFilename?: string
   className?: string
+  reportId?: string
+  chartId?: string
 }
 
 export function ChartContainer({
@@ -29,10 +33,13 @@ export function ChartContainer({
   overrides = {},
   csvData,
   csvFilename,
-  className = ''
+  className = '',
+  reportId,
+  chartId
 }: ChartContainerProps) {
   const plotRef = useRef<any>(null)
   const { preferences } = useUserPreferences()
+  const [showEmbedDialog, setShowEmbedDialog] = useState(false)
   
   // Apply the configured layout
   const figure = { data, layout }
@@ -50,6 +57,23 @@ export function ChartContainer({
     },
     ...config
   }
+
+  // Generate embed code
+  const embedCode = reportId && chartId 
+    ? `<iframe 
+  src="${window.location.origin}/embed/chart/${reportId}/${chartId}" 
+  width="100%" 
+  height="500" 
+  frameborder="0"
+  style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+</iframe>`
+    : `<iframe 
+  src="${window.location.origin}/embed/chart/${encodeURIComponent(title)}" 
+  width="100%" 
+  height="500" 
+  frameborder="0"
+  style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+</iframe>`
 
   const downloadImage = useCallback(async () => {
     if (!plotRef.current) return
@@ -78,7 +102,7 @@ export function ChartContainer({
       toast.error('Failed to download chart image')
       console.error('Download error:', error)
     }
-  }, [title])
+  }, [title, preferences.exportFormat])
 
   const downloadCSV = useCallback(() => {
     if (!csvData) {
@@ -102,21 +126,22 @@ export function ChartContainer({
     }
   }, [csvData, csvFilename, title])
 
-  const copyEmbedCode = useCallback(() => {
-    const embedCode = `<iframe 
-  src="${window.location.origin}/embed/chart/${encodeURIComponent(title)}" 
-  width="800" 
-  height="600" 
-  frameborder="0" 
-  style="border: none;">
-</iframe>`
-    
-    navigator.clipboard.writeText(embedCode).then(() => {
+  const handleCopyEmbed = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(embedCode)
       toast.success('Embed code copied to clipboard')
-    }).catch(() => {
+      setShowEmbedDialog(false)
+    } catch (error) {
       toast.error('Failed to copy embed code')
-    })
-  }, [title])
+    }
+  }, [embedCode])
+
+  const handleViewStandalone = useCallback(() => {
+    const url = reportId && chartId 
+      ? `/embed/chart/${reportId}/${chartId}`
+      : `/embed/chart/${encodeURIComponent(title)}`
+    window.open(url, '_blank')
+  }, [reportId, chartId, title])
 
   return (
     <Card className={`chart-container ${className}`}>
@@ -143,15 +168,53 @@ export function ChartContainer({
             <Download className="w-4 h-4 mr-2" />
             Image
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={copyEmbedCode}
-            className="text-label-medium"
-          >
-            <Code className="w-4 h-4 mr-2" />
-            Embed
-          </Button>
+          
+          <Dialog open={showEmbedDialog} onOpenChange={setShowEmbedDialog}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-label-medium"
+              >
+                <Share className="w-4 h-4 mr-2" />
+                Embed
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Embed Chart</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-label-medium font-medium">Embed Code:</label>
+                  <Textarea
+                    value={embedCode}
+                    readOnly
+                    rows={8}
+                    className="text-body-small font-mono"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button onClick={handleCopyEmbed} className="flex-1">
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Embed Code
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleViewStandalone}
+                    className="flex-1"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View Standalone
+                  </Button>
+                </div>
+                <div className="text-body-small text-muted-foreground">
+                  This embed code will display the chart with full interactivity and matching theme. 
+                  The chart is responsive and includes download functionality.
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardHeader>
       <CardContent>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -6,43 +6,18 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { MagnifyingGlass, TrendUp, Users, Calendar } from '@phosphor-icons/react'
 import { TemplateShowcase } from '@/components/TemplateShowcase'
+import { MarkdownRenderer } from '@/components/MarkdownRenderer'
+import { getReportSearchData, loadHomeContent } from '@/lib/contentManager'
 
 interface Report {
   id: string
   title: string
-  description: string
-  tags: string[]
-  lastUpdated: string
+  subtitle: string
+  author: string
+  publishDate: string
   readTime: string
-  thumbnail?: string
+  tags: string[]
 }
-
-const sampleReports: Report[] = [
-  {
-    id: 'sales-performance-q1-2024',
-    title: 'Q1 2024 Sales Performance Analysis',
-    description: 'Comprehensive analysis of sales metrics, conversion rates, and revenue trends for the first quarter of 2024.',
-    tags: ['Sales', 'Performance', 'Q1', 'Revenue'],
-    lastUpdated: '2024-01-15',
-    readTime: '8 min read'
-  },
-  {
-    id: 'market-segmentation-study',
-    title: 'Market Segmentation Deep Dive',
-    description: 'Detailed breakdown of customer segments across technology, healthcare, finance, and other key industries.',
-    tags: ['Market Research', 'Segmentation', 'Industries'],
-    lastUpdated: '2024-01-12',
-    readTime: '12 min read'
-  },
-  {
-    id: 'user-engagement-metrics',
-    title: 'User Engagement Metrics Dashboard',
-    description: 'Interactive analysis of user behavior patterns, session duration, and feature adoption rates.',
-    tags: ['User Analytics', 'Engagement', 'Behavior'],
-    lastUpdated: '2024-01-10',
-    readTime: '6 min read'
-  }
-]
 
 interface ReportSearchProps {
   onReportSelect: (reportId: string) => void
@@ -50,33 +25,77 @@ interface ReportSearchProps {
 
 export function ReportSearch({ onReportSelect }: ReportSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredReports, setFilteredReports] = useState(sampleReports)
+  const [reports, setReports] = useState<Report[]>([])
+  const [filteredReports, setFilteredReports] = useState<Report[]>([])
+  const [homeContent, setHomeContent] = useState<string>('')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true)
+      try {
+        // Load reports
+        const reportData = await getReportSearchData()
+        setReports(reportData)
+        setFilteredReports(reportData)
+
+        // Load home content
+        const content = await loadHomeContent()
+        if (content) {
+          setHomeContent(content)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
     if (!query.trim()) {
-      setFilteredReports(sampleReports)
+      setFilteredReports(reports)
       return
     }
 
-    const filtered = sampleReports.filter(report =>
+    const filtered = reports.filter(report =>
       report.title.toLowerCase().includes(query.toLowerCase()) ||
-      report.description.toLowerCase().includes(query.toLowerCase()) ||
+      report.subtitle.toLowerCase().includes(query.toLowerCase()) ||
       report.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
     )
     setFilteredReports(filtered)
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-title-large mb-2">Loading reports...</h2>
+          <p className="text-body-medium text-muted-foreground">Please wait while we fetch the data.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Search Header */}
-      <div className="text-center space-y-4">
+    <div className="space-y-8">
+      {/* Hero Section with Home Content */}
+      <div className="text-center space-y-6">
         <h1 className="text-display-small font-bold text-foreground">
-          Data Stories & Reports
+          DataStory Platform
         </h1>
-        <p className="text-body-large text-muted-foreground max-w-2xl mx-auto">
-          Explore interactive data visualizations and insights across sales, marketing, and business analytics.
-        </p>
+        <div className="max-w-4xl mx-auto">
+          {homeContent ? (
+            <MarkdownRenderer content={homeContent} className="text-left" />
+          ) : (
+            <p className="text-body-large text-muted-foreground">
+              Explore interactive data visualizations and insights across sales, marketing, and business analytics.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Search Bar */}
@@ -114,7 +133,7 @@ export function ReportSearch({ onReportSelect }: ReportSearchProps) {
                 <TrendUp className="w-5 h-5 text-primary flex-shrink-0 ml-2" />
               </div>
               <CardDescription className="text-body-small line-clamp-3">
-                {report.description}
+                {report.subtitle}
               </CardDescription>
             </CardHeader>
             
@@ -141,11 +160,15 @@ export function ReportSearch({ onReportSelect }: ReportSearchProps) {
               <div className="flex items-center justify-between text-label-small text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  <span>{new Date(report.lastUpdated).toLocaleDateString()}</span>
+                  <span>{new Date(report.publishDate).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span>{report.readTime}</span>
                 </div>
+              </div>
+              
+              <div className="text-label-small text-muted-foreground">
+                By {report.author}
               </div>
             </CardContent>
           </Card>

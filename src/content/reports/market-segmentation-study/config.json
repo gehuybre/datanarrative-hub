@@ -1,0 +1,76 @@
+{
+  "id": "market-segmentation-study",
+  "title": "Market Segmentation Deep Dive",
+  "subtitle": "Detailed breakdown of customer segments across key industries",
+  "author": "Market Research Team",
+  "publishDate": "2024-01-12",
+  "readTime": "12 min read",
+  "tags": ["Market Research", "Segmentation", "Industries"],
+  "contentFile": "content.md",
+  "dataFiles": [
+    {
+      "filename": "market-segments.csv",
+      "title": "Market Segment Distribution",
+      "description": "Customer distribution across market segments"
+    },
+    {
+      "filename": "segment-metrics.csv",
+      "title": "Segment Performance Metrics", 
+      "description": "Key performance indicators by market segment"
+    }
+  ],
+  "charts": [
+    {
+      "id": "segment-distribution-pie",
+      "title": "Market Segment Distribution",
+      "type": "pie",
+      "dataFile": "market-segments.csv",
+      "config": {
+        "labels": "category",
+        "values": "percentage",
+        "hole": 0.3
+      }
+    },
+    {
+      "id": "segment-volume-bar",
+      "title": "Customer Count by Segment",
+      "type": "bar",
+      "dataFile": "market-segments.csv",
+      "config": {
+        "x": "category",
+        "y": "count",
+        "xaxis": { "title": "Market Segment" },
+        "yaxis": { "title": "Customer Count" }
+      }
+    },
+    {
+      "id": "retention-ltv-scatter",
+      "title": "Retention Rate vs Lifetime Value",
+      "type": "scatter",
+      "dataFile": "segment-metrics.csv",
+      "config": {
+        "x": "retention_rate",
+        "y": "lifetime_value",
+        "text": "category",
+        "xaxis": { "title": "Retention Rate (%)" },
+        "yaxis": { "title": "Lifetime Value ($)" }
+      }
+    }
+  ],
+  "tables": [
+    {
+      "id": "segment-distribution-table",
+      "title": "Market Segment Distribution",
+      "dataFile": "market-segments.csv",
+      "columns": ["category", "percentage", "count", "revenue_share", "avg_deal_size"],
+      "columnTitles": ["Category", "Percentage (%)", "Customer Count", "Revenue Share (%)", "Avg Deal Size ($)"]
+    },
+    {
+      "id": "segment-performance-table",
+      "title": "Segment Performance Metrics",
+      "dataFile": "segment-metrics.csv",
+      "columns": ["category", "retention_rate", "acquisition_cost", "lifetime_value", "growth_rate"],
+      "columnTitles": ["Category", "Retention Rate (%)", "Acquisition Cost ($)", "Lifetime Value ($)", "Growth Rate (%)"]
+    }
+  ]
+}

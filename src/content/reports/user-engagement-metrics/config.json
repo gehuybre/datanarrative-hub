@@ -1,0 +1,77 @@
+{
+  "id": "user-engagement-metrics",
+  "title": "User Engagement Metrics Dashboard",
+  "subtitle": "Interactive analysis of user behavior patterns and feature adoption",
+  "author": "Product Analytics Team",
+  "publishDate": "2024-01-10",
+  "readTime": "6 min read",
+  "tags": ["User Analytics", "Engagement", "Behavior"],
+  "contentFile": "content.md",
+  "dataFiles": [
+    {
+      "filename": "user-engagement.csv",
+      "title": "User Engagement Metrics",
+      "description": "Monthly user engagement and retention metrics"
+    },
+    {
+      "filename": "feature-adoption.csv",
+      "title": "Feature Adoption Data",
+      "description": "Feature usage rates and satisfaction scores"
+    }
+  ],
+  "charts": [
+    {
+      "id": "active-users-trend",
+      "title": "Monthly Active Users Growth",
+      "type": "line",
+      "dataFile": "user-engagement.csv",
+      "config": {
+        "x": "month",
+        "y": "active_users",
+        "xaxis": { "title": "Month" },
+        "yaxis": { "title": "Active Users" }
+      }
+    },
+    {
+      "id": "engagement-retention-scatter",
+      "title": "Engagement Score vs Retention Rate",
+      "type": "scatter",
+      "dataFile": "user-engagement.csv",
+      "config": {
+        "x": "retention_rate",
+        "y": "engagement_score",
+        "text": "month",
+        "xaxis": { "title": "Retention Rate (%)" },
+        "yaxis": { "title": "Engagement Score" }
+      }
+    },
+    {
+      "id": "feature-adoption-bar",
+      "title": "Feature Adoption Rates",
+      "type": "bar",
+      "dataFile": "feature-adoption.csv",
+      "config": {
+        "x": "feature",
+        "y": "usage_rate",
+        "xaxis": { "title": "Feature" },
+        "yaxis": { "title": "Usage Rate" }
+      }
+    }
+  ],
+  "tables": [
+    {
+      "id": "engagement-metrics-table",
+      "title": "User Engagement Metrics",
+      "dataFile": "user-engagement.csv",
+      "columns": ["month", "active_users", "retention_rate", "engagement_score", "session_duration"],
+      "columnTitles": ["Month", "Active Users", "Retention Rate (%)", "Engagement Score", "Session Duration (min)"]
+    },
+    {
+      "id": "feature-adoption-table",
+      "title": "Feature Adoption Analysis",
+      "dataFile": "feature-adoption.csv",
+      "columns": ["feature", "usage_rate", "satisfaction_score", "adoption_date", "user_feedback_score"],
+      "columnTitles": ["Feature", "Usage Rate", "Satisfaction Score", "Adoption Date", "Feedback Score"]
+    }
+  ]
+}
