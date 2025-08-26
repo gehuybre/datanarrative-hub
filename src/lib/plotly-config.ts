@@ -1,5 +1,10 @@
 import { colors } from './colors'
 
+// Function to get CSS variable value
+function getCSSVariable(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+}
+
 // Base Plotly template applied to every figure
 export const BASE_LAYOUT = {
   font: {
@@ -10,12 +15,12 @@ export const BASE_LAYOUT = {
   paper_bgcolor: colors.neutral[50],
   plot_bgcolor: 'transparent',
   colorway: [
-    colors.chart.primary,
-    colors.chart.secondary,
-    colors.chart.tertiary,
-    colors.chart.quaternary,
-    colors.chart.quinary,
-    colors.chart.senary
+    colors.chart.primary,     // Aurora green
+    colors.chart.secondary,   // Aurora purple
+    colors.chart.tertiary,    // Forest green
+    colors.chart.quaternary,  // Magenta aurora
+    colors.chart.quinary,     // Aurora yellow
+    colors.chart.senary       // Icy blue
   ],
   margin: { l: 60, r: 40, t: 60, b: 60 },
   showlegend: true,
@@ -160,8 +165,9 @@ export const CHART_TYPE_LAYOUTS = {
     trace: {
       colorscale: [
         [0, colors.neutral[100]],
-        [0.5, colors.primary[300]],
-        [1, colors.primary[600]]
+        [0.3, colors.chart.tertiary],  // Forest green
+        [0.6, colors.chart.primary],   // Aurora green
+        [1, colors.chart.secondary]    // Aurora purple
       ],
       showscale: true,
       colorbar: {
@@ -262,4 +268,38 @@ export function applyLayoutToFigure(
   }
   
   return fig
+}
+
+// Function to register Aurora Borealis theme as a Plotly template
+export function registerAuroraBorealisTemplate() {
+  if (typeof window !== 'undefined' && window.Plotly) {
+    const template = {
+      layout: BASE_LAYOUT,
+      data: {
+        scatter: [CHART_TYPE_LAYOUTS.scatter.trace],
+        bar: [CHART_TYPE_LAYOUTS.bar.trace], 
+        line: [CHART_TYPE_LAYOUTS.line.trace],
+        pie: [CHART_TYPE_LAYOUTS.pie.trace],
+        heatmap: [CHART_TYPE_LAYOUTS.heatmap.trace],
+        histogram: [CHART_TYPE_LAYOUTS.histogram.trace]
+      }
+    }
+    
+    // Register the template
+    window.Plotly.templates.aurora_borealis = template
+    
+    // Set as default template
+    window.Plotly.templates.default = 'aurora_borealis'
+  }
+}
+
+// Call this function when the module loads
+if (typeof window !== 'undefined') {
+  // Delay registration until Plotly is loaded
+  if (window.Plotly) {
+    registerAuroraBorealisTemplate()
+  } else {
+    // Wait for Plotly to load
+    setTimeout(registerAuroraBorealisTemplate, 500)
+  }
 }

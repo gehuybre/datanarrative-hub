@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { ReportSearch } from '@/components/ReportSearch'
 import { ReportViewer } from '@/components/ReportViewer'
 import { Toaster } from '@/components/ui/sonner'
+// Import plotly config to ensure Aurora Borealis theme is registered
+import '@/lib/plotly-config'
 
 function App() {
   const [currentView, setCurrentView] = useState<'search' | 'report'>('search')

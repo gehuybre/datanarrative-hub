@@ -1,11 +1,11 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Download, Share, Code, Copy, ExternalLink } from '@phosphor-icons/react'
-import { applyLayout, applyTraceDefaults, ChartType } from '@/lib/plotly-config'
+import { applyLayout, applyTraceDefaults, ChartType, registerAuroraBorealisTemplate } from '@/lib/plotly-config'
 import { charts as chartConfig } from '@/lib/config'
 import { useUserPreferences } from '@/hooks/use-preferences'
 import { toast } from 'sonner'
@@ -40,6 +40,11 @@ export function ChartContainer({
   const plotRef = useRef<any>(null)
   const { preferences } = useUserPreferences()
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
+  
+  // Register Aurora Borealis template on mount
+  useEffect(() => {
+    registerAuroraBorealisTemplate()
+  }, [])
   
   // Calculate final layout with applied config
   const finalLayout = applyLayout(chartType, layout, overrides)
@@ -118,8 +123,10 @@ export function ChartContainer({
             size="sm"
             onClick={handleDownloadImage}
             className="quick-action-btn"
+            title="Export chart as image"
           >
             <Download className="w-4 h-4" />
+            <span className="hidden sm:inline ml-1">PNG</span>
           </Button>
           
           {csvData && csvFilename && (
@@ -128,16 +135,23 @@ export function ChartContainer({
               size="sm"
               onClick={handleDownloadCSV}
               className="quick-action-btn"
+              title="Download data as CSV"
             >
               <Download className="w-4 h-4" />
-              CSV
+              <span className="ml-1">CSV</span>
             </Button>
           )}
           
           <Dialog open={showEmbedDialog} onOpenChange={setShowEmbedDialog}>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="quick-action-btn">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="quick-action-btn"
+                title="Get embed code"
+              >
                 <Share className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Embed</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
@@ -181,7 +195,34 @@ export function ChartContainer({
             displayModeBar: true,
             displaylogo: false,
             modeBarButtonsToRemove: ['pan2d', 'lasso2d'],
+            modeBarButtonsToAdd: [
+              {
+                name: 'Download PNG',
+                icon: {
+                  width: 857.1,
+                  height: 1000,
+                  path: 'm214 629c0 36 11 65 32 86 22 22 51 32 87 32h142c36 0 65-11 86-32 22-22 32-51 32-87v-171h-379v172z m-71-143h521v-107c0-36-11-65-32-86-22-22-51-32-87-32h-283c-36 0-65 11-86 32-22 22-32 51-32 87v106z',
+                  transform: 'matrix(1 0 0 -1 0 850)'
+                },
+                click: function(gd: any) {
+                  //@ts-ignore
+                  window.Plotly.downloadImage(gd, {
+                    format: 'png',
+                    width: 1200,
+                    height: 800,
+                    filename: 'chart'
+                  })
+                }
+              }
+            ],
             responsive: true,
+            toImageButtonOptions: {
+              format: 'png',
+              filename: 'chart',
+              height: 800,
+              width: 1200,
+              scale: 2
+            },
             ...config
           }}
           className="w-full h-full"

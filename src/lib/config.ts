@@ -88,10 +88,18 @@ export const appConfig = {
         'hoverClosestCartesian',
         'hoverCompareCartesian'
       ],
+      modeBarButtonsToAdd: [],
       scrollZoom: false,
       doubleClick: 'reset+autosize',
-      showTips: false,
-      responsive: true
+      showTips: true,
+      responsive: true,
+      toImageButtonOptions: {
+        format: 'png',
+        filename: 'chart',
+        height: 800,
+        width: 1200,
+        scale: 2
+      }
     }
   },
 
