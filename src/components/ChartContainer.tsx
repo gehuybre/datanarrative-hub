@@ -43,7 +43,12 @@ export function ChartContainer({
   
   // Register Aurora Borealis template on mount
   useEffect(() => {
-    registerAuroraBorealisTemplate()
+    // Wait a bit for Plotly to be fully loaded, then register template
+    const timer = setTimeout(() => {
+      registerAuroraBorealisTemplate()
+    }, 100)
+    
+    return () => clearTimeout(timer)
   }, [])
   
   // Calculate final layout with applied config
@@ -56,7 +61,7 @@ export function ChartContainer({
   const embedCode = `<iframe src="${window.location.origin}/embed/chart/${reportId}/${chartId}" width="800" height="600" frameborder="0"></iframe>`
 
   const handleDownloadImage = useCallback(() => {
-    if (plotRef.current) {
+    if (plotRef.current && window.Plotly) {
       const element = plotRef.current.el
       const gd = element
       
@@ -72,7 +77,6 @@ export function ChartContainer({
         scale: 2
       }
       
-      //@ts-ignore
       window.Plotly.downloadImage(gd, config_download)
         .then(() => {
           toast.success(`Chart exported as ${format.toUpperCase()}`)
@@ -81,6 +85,8 @@ export function ChartContainer({
           console.error('Export failed:', error)
           toast.error('Failed to export chart')
         })
+    } else {
+      toast.error('Chart export not available')
     }
   }, [title, preferences])
 
@@ -126,7 +132,7 @@ export function ChartContainer({
             title="Export chart as image"
           >
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline ml-1">PNG</span>
+            <span className="ml-1">PNG</span>
           </Button>
           
           {csvData && csvFilename && (
@@ -151,7 +157,7 @@ export function ChartContainer({
                 title="Get embed code"
               >
                 <Share className="w-4 h-4" />
-                <span className="hidden sm:inline ml-1">Embed</span>
+                <span className="ml-1">Embed</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
@@ -205,20 +211,21 @@ export function ChartContainer({
                   transform: 'matrix(1 0 0 -1 0 850)'
                 },
                 click: function(gd: any) {
-                  //@ts-ignore
-                  window.Plotly.downloadImage(gd, {
-                    format: 'png',
-                    width: 1200,
-                    height: 800,
-                    filename: 'chart'
-                  })
+                  if (window.Plotly) {
+                    window.Plotly.downloadImage(gd, {
+                      format: 'png',
+                      width: 1200,
+                      height: 800,
+                      filename: 'chart'
+                    })
+                  }
                 }
               }
             ],
             responsive: true,
             toImageButtonOptions: {
               format: 'png',
-              filename: 'chart',
+              filename: title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_chart',
               height: 800,
               width: 1200,
               scale: 2
@@ -226,6 +233,8 @@ export function ChartContainer({
             ...config
           }}
           className="w-full h-full"
+          useResizeHandler={true}
+          style={{ width: '100%', height: '100%' }}
         />
       </CardContent>
     </Card>

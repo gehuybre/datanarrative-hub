@@ -98,8 +98,9 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
     
     if (!csvData || !csvRaw) {
       return (
-        <div className="text-body-medium text-muted-foreground">
-          Chart data not available for {chartConfig.dataFile}
+        <div className="text-body-medium text-muted-foreground p-8 text-center border-2 border-dashed border-border rounded-lg">
+          <p className="font-medium">Chart data not available</p>
+          <p className="text-sm mt-1">Missing data file: {chartConfig.dataFile}</p>
         </div>
       )
     }
