@@ -22,6 +22,7 @@ interface DataTableProps {
   reportId?: string
   tableId?: string
   pageSize?: number
+  enableSorting?: boolean
 }
 
 export function DataTable({ 
@@ -34,7 +35,8 @@ export function DataTable({
   className,
   reportId,
   tableId,
-  pageSize = 50
+  pageSize = 50,
+  enableSorting = true
 }: DataTableProps) {
   const [showEmbedDialog, setShowEmbedDialog] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -240,7 +242,7 @@ export function DataTable({
                   <TableHead 
                     key={column} 
                     className={`text-label-medium font-medium ${enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''}`}
-                    onClick={() => handleHeaderClick(column)}
+                    onClick={enableSorting ? () => handleHeaderClick(column) : undefined}
                   >
                     <div className="flex items-center gap-2">
                       <span>{displayColumnTitles[index] || column}</span>
