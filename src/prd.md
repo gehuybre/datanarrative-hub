@@ -34,14 +34,19 @@ Traditional data reporting tools lack the flexibility to organize content in int
 - **Success criteria**: Content loads correctly from folder structure, multiple CSV files per report supported
 
 ### Interactive Data Visualizations  
-- **What it does**: Renders Plotly charts with consistent theming, download capabilities, and embed codes
-- **Why it matters**: Makes data accessible and shareable across platforms
-- **Success criteria**: Charts render with Material Design 3 colors, generate working embed codes, support image/CSV downloads
+- **What it does**: Renders Plotly charts with consistent theming, download capabilities, embed codes, interactive filtering, and drill-down navigation
+- **Why it matters**: Makes data accessible, explorable, and shareable across platforms with advanced interactivity
+- **Success criteria**: Charts render with Material Design 3 colors, generate working embed codes, support image/CSV downloads, enable click-to-drill-down, provide filtering controls
 
-### Embeddable Tables
-- **What it does**: Displays CSV data in Material Design 3 tables with embed functionality
-- **Why it matters**: Enables data sharing in external websites and applications
-- **Success criteria**: Tables are responsive, generate iframe embed codes, support CSV downloads
+### Advanced Table Interactions
+- **What it does**: Displays CSV data in Material Design 3 tables with filtering, sorting, pagination, and embed functionality
+- **Why it matters**: Enables sophisticated data exploration and sharing in external websites and applications
+- **Success criteria**: Tables are responsive, support column filtering and sorting, generate iframe embed codes, provide pagination, support CSV downloads
+
+### Global Filter Coordination
+- **What it does**: Provides unified filtering across all charts and tables within a report based on shared data dimensions
+- **Why it matters**: Enables users to filter multiple visualizations simultaneously for comprehensive data analysis
+- **Success criteria**: Global filters affect all compatible charts and tables, filter state is maintained across interactions, provides clear filter indicators
 
 ### Markdown Content Rendering
 - **What it does**: Renders markdown files as formatted content within reports
