@@ -15,6 +15,9 @@ import monthlySummaryRaw from '@/content/reports/sales-performance-q1-2024/data/
 import userEngagementRaw from '@/content/reports/user-engagement-metrics/data/user-engagement.csv?raw'
 import featureAdoptionRaw from '@/content/reports/user-engagement-metrics/data/feature-adoption.csv?raw'
 
+// Vergunningen 2025
+import graphDataExportRaw from '@/content/reports/vergunningen-2025/data/graph_data_export.csv?raw'
+
 // Create a lookup map for the data files
 const dataFilesMap: Record<string, string> = {
   'market-segmentation-study/market-segments.csv': marketSegmentsRaw,
@@ -23,6 +26,7 @@ const dataFilesMap: Record<string, string> = {
   'sales-performance-q1-2024/monthly-summary.csv': monthlySummaryRaw,
   'user-engagement-metrics/user-engagement.csv': userEngagementRaw,
   'user-engagement-metrics/feature-adoption.csv': featureAdoptionRaw,
+  'vergunningen-2025/graph_data_export.csv': graphDataExportRaw,
 }
 
 export function loadCSVDataFromMap(reportId: string, filename: string): Promise<ParsedCSVData | null> {

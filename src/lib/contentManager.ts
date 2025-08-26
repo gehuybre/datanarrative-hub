@@ -21,7 +21,7 @@ export interface DataFile {
 export interface ChartConfig {
   id: string
   title: string
-  type: 'line' | 'bar' | 'scatter' | 'pie'
+  type: 'line' | 'bar' | 'scatter' | 'pie' | 'multiline' | 'trendlines'
   dataFile: string
   config: {
     x?: string
@@ -32,6 +32,15 @@ export interface ChartConfig {
     hole?: number
     xaxis?: { title: string }
     yaxis?: { title: string }
+    traces?: Array<{
+      y: string
+      name: string
+      line?: {
+        color?: string
+        width?: number
+        dash?: string
+      }
+    }>
   }
 }
 
@@ -135,7 +144,8 @@ export function getAvailableReports(): string[] {
   return [
     'sales-performance-q1-2024',
     'market-segmentation-study', 
-    'user-engagement-metrics'
+    'user-engagement-metrics',
+    'vergunningen-2025'
   ]
 }
 

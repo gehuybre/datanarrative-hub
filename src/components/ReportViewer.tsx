@@ -139,6 +139,80 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
               }
             }
           }]
+
+        case 'multiline':
+          return chartConfig.config.traces?.map((trace: any, index: number) => ({
+            x: csvData.data.map(row => row[chartConfig.config.x!]),
+            y: csvData.data.map(row => row[trace.y]),
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: trace.name,
+            line: {
+              shape: 'spline',
+              color: trace.line?.color || auroraColors[index % auroraColors.length],
+              width: trace.line?.width || 3,
+              dash: trace.line?.dash || 'solid'
+            },
+            marker: {
+              color: trace.line?.color || auroraColors[index % auroraColors.length],
+              size: 6,
+              line: {
+                color: 'white',
+                width: 1
+              }
+            },
+            hovertemplate: `<b>${trace.name}</b><br>` +
+                          `<b>Periode:</b> %{x}<br>` +
+                          `<b>Aantal:</b> %{y:,.0f}<br>` +
+                          `<extra></extra>`,
+            hoverlabel: {
+              bgcolor: trace.line?.color || auroraColors[index % auroraColors.length],
+              bordercolor: 'white',
+              font: { color: 'white', size: 12 }
+            }
+          })) || []
+
+        case 'trendlines':
+          return chartConfig.config.traces?.map((trace: any, index: number) => {
+            const isDashed = trace.line?.dash === 'dash'
+            const traceConfig: any = {
+              x: csvData.data.map(row => row[chartConfig.config.x!]),
+              y: csvData.data.map(row => row[trace.y]),
+              type: 'scatter',
+              mode: isDashed ? 'lines+markers' : 'lines',
+              name: trace.name,
+              line: {
+                shape: 'spline',
+                color: trace.line?.color || auroraColors[index % auroraColors.length],
+                width: trace.line?.width || 3,
+                dash: trace.line?.dash || 'solid'
+              },
+              hovertemplate: `%{y:,.0f}<extra></extra>`,
+              hoverlabel: {
+                bgcolor: trace.line?.color || auroraColors[index % auroraColors.length],
+                bordercolor: 'white',
+                borderwidth: 1,
+                font: { 
+                  color: 'white', 
+                  size: 12,
+                  family: 'Inter, system-ui, sans-serif'
+                }
+              }
+            }
+            
+            if (isDashed) {
+              traceConfig.marker = {
+                color: trace.line?.color || auroraColors[index % auroraColors.length],
+                size: 6,
+                line: {
+                  color: 'white',
+                  width: 1
+                }
+              }
+            }
+            
+            return traceConfig
+          }) || []
         
         case 'bar':
           return [{
@@ -210,7 +284,20 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
         layout={{
           ...chartConfig.config,
           // Remove title from layout since it's handled by ChartContainer
-          title: undefined
+          title: undefined,
+          // Improve hover behavior for multiline and trendlines charts
+          ...((chartConfig.type === 'multiline' || chartConfig.type === 'trendlines') && {
+            hovermode: chartConfig.type === 'trendlines' ? 'closest' : 'x unified',
+            hoverdistance: 100,
+            spikedistance: 100,
+            xaxis: {
+              ...chartConfig.config.xaxis,
+              showspikes: true,
+              spikecolor: '#999',
+              spikethickness: 1,
+              spikedash: 'solid'
+            }
+          })
         }}
         chartType={chartConfig.type}
         csvData={csvRaw}

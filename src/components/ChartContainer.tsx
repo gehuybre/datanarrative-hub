@@ -63,13 +63,13 @@ export function ChartContainer({
   }, [chartType, data, layout]) // Re-run when chart properties change
   
   // Calculate final layout with applied config and template
-  const finalLayout = applyLayout(chartType, layout, {
+  const finalLayout = applyLayout(chartType === 'multiline' || chartType === 'trendlines' ? 'line' : chartType, layout, {
     template: 'aurora_borealis',
     ...overrides
   })
   
   // Apply trace defaults to data with Aurora colors
-  const finalData = applyTraceDefaults(data, chartType)
+  const finalData = applyTraceDefaults(data, chartType === 'multiline' || chartType === 'trendlines' ? 'line' : chartType)
   
   // Generate embed code
   const embedCode = `<iframe src="${window.location.origin}/embed/chart/${reportId}/${chartId}" width="800" height="600" frameborder="0"></iframe>`

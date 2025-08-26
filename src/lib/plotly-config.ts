@@ -141,6 +141,44 @@ export const CHART_TYPE_LAYOUTS = {
     }
   },
   
+  multiline: {
+    layout: {
+      hovermode: 'x unified'
+    },
+    trace: {
+      mode: 'lines+markers',
+      line: {
+        width: 3
+      },
+      marker: {
+        size: 6,
+        line: {
+          width: 1,
+          color: 'white'
+        }
+      }
+    }
+  },
+
+  trendlines: {
+    layout: {
+      hovermode: 'x unified'
+    },
+    trace: {
+      mode: 'lines+markers',
+      line: {
+        width: 3
+      },
+      marker: {
+        size: 6,
+        line: {
+          width: 1,
+          color: 'white'
+        }
+      }
+    }
+  },
+  
   scatter: {
     layout: {
       hovermode: 'closest'
@@ -262,6 +300,7 @@ export function applyTraceDefaults(data: any[], chartType: ChartType) {
         break
         
       case 'line':
+      case 'multiline':
         // For line charts, apply color to both line and marker
         traceDefaults.line = {
           ...traceDefaults.line,

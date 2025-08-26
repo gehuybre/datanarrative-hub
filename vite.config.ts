@@ -22,4 +22,6 @@ export default defineConfig({
       '@': resolve(projectRoot, 'src')
     }
   },
+  // Configure base URL for GitHub Pages deployment
+  base: process.env.NODE_ENV === 'production' ? '/datanarrative-hub/' : '/',
 });
