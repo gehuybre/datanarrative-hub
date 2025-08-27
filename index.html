@@ -9,6 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&family=Lora&family=JetBrains+Mono&display=swap">
     <link href="/src/main.css" rel="stylesheet" />
+    <script type="text/javascript">
+      // GitHub Pages redirect handling for client-side routing
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = decodeURIComponent(l.search.slice(1));
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
 </head>
 
 <body>
