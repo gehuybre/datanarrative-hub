@@ -1,1 +1,0 @@
-// Global filter panel removed - interactive filtering functionality undone
