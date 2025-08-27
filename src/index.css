@@ -1,0 +1,281 @@
+@import 'tailwindcss';
+@import "tw-animate-css";
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+}
+
+:root {
+  /* Material Design 3 Color System */
+  --background: oklch(0.98 0.01 180);
+  --foreground: oklch(0.15 0.02 240);
+
+  --card: oklch(0.99 0.005 180);
+  --card-foreground: oklch(0.15 0.02 240);
+  
+  --popover: oklch(1.00 0 0);
+  --popover-foreground: oklch(0.15 0.02 240);
+
+  --primary: oklch(0.65 0.20 160);
+  --primary-foreground: oklch(0.98 0.01 180);
+  
+  --secondary: oklch(0.92 0.08 200);
+  --secondary-foreground: oklch(0.20 0.05 240);
+  
+  --muted: oklch(0.94 0.02 180);
+  --muted-foreground: oklch(0.45 0.02 240);
+  
+  --accent: oklch(0.75 0.15 280);
+  --accent-foreground: oklch(0.15 0.02 240);
+  
+  --destructive: oklch(0.65 0.20 25);
+  --destructive-foreground: oklch(0.98 0.01 180);
+
+  --border: oklch(0.88 0.02 180);
+  --input: oklch(0.88 0.02 180);
+  --ring: oklch(0.65 0.20 160);
+
+  --radius: 0.75rem;
+
+  --chart-1: oklch(0.65 0.20 160);  /* Aurora green */
+  --chart-2: oklch(0.75 0.15 280);  /* Aurora purple */  
+  --chart-3: oklch(0.55 0.18 120);  /* Forest green */
+  --chart-4: oklch(0.70 0.12 320);  /* Magenta aurora */
+  --chart-5: oklch(0.60 0.15 40);   /* Aurora yellow */
+  --chart-6: oklch(0.68 0.18 200);  /* Icy blue */
+
+  --sidebar: oklch(0.96 0.01 180);
+
+  --sidebar-foreground: oklch(0.15 0.02 240);
+
+  --sidebar-primary: oklch(0.65 0.20 160);
+
+  --sidebar-primary-foreground: oklch(0.98 0.01 180);
+
+  --sidebar-accent: oklch(0.92 0.08 200);
+
+  --sidebar-accent-foreground: oklch(0.20 0.05 240);
+
+  --sidebar-border: oklch(0.88 0.02 180);
+
+  --sidebar-ring: oklch(0.65 0.20 160);
+
+  --shadow-color: oklch(0.65 0.20 160);
+
+  --shadow-opacity: 0.15;
+
+  --shadow-blur: 8px;
+
+  --shadow-spread: 0px;
+
+  --shadow-offset-x: 0px;
+
+  --shadow-offset-y: 4px;
+
+  --font-sans: Inter;
+
+  --font-serif: Lora;
+
+  --font-mono: JetBrains Mono;
+
+  --spacing: 0.20rem;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.5);
+  --radius-xl: calc(var(--radius) * 2);
+  --radius-2xl: calc(var(--radius) * 3);
+  --radius-full: 9999px;
+}
+
+/* Typography scale */
+.text-display-large {
+  font-size: 57px;
+  line-height: 64px;
+  font-weight: 400;
+  letter-spacing: -0.25px;
+}
+
+.text-display-medium {
+  font-size: 45px;
+  line-height: 52px;
+  font-weight: 400;
+}
+
+.text-display-small {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 400;
+}
+
+.text-headline-large {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 400;
+}
+
+.text-headline-medium {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 400;
+}
+
+.text-headline-small {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+}
+
+.text-title-large {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 400;
+}
+
+.text-title-medium {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+}
+
+.text-title-small {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.text-body-large {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.text-body-medium {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.25px;
+}
+
+.text-body-small {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+}
+
+.text-label-large {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.text-label-medium {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.text-label-small {
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Material Design 3 elevation */
+.elevation-1 {
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+}
+
+.elevation-2 {
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+}
+
+.elevation-3 {
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+}
+
+.elevation-4 {
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+}
+
+.elevation-5 {
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.3), 0px 8px 12px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Chart container styling */
+.chart-container {
+  @apply bg-card rounded-lg p-6;
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.2s ease-in-out;
+  overflow: hidden;
+  contain: layout style;
+  width: 100%;
+}
+
+.chart-container:hover {
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+}
+
+.chart-container .plotly-graph-div {
+  @apply rounded-md;
+  max-width: 100%;
+  overflow: hidden;
+  width: 100% !important;
+}
+
+.chart-container .plotly {
+  width: 100% !important;
+}
+
+.chart-container .svg-container {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Ensure chart content stays within container */
+.chart-container [data-title] {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Table container styling */
+.chart-container .overflow-x-auto {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+body{
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
