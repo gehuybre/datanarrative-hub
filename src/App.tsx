@@ -42,8 +42,11 @@ function MainApp() {
 }
 
 function App() {
+  // Use basename for GitHub Pages deployment
+  const basename = import.meta.env.MODE === 'production' ? '/datanarrative-hub' : '';
+  
   return (
-    <Router>
+    <Router basename={basename}>
       <Routes>
         {/* Main application routes */}
         <Route path="/" element={<MainApp />} />
