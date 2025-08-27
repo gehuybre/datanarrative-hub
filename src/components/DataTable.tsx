@@ -5,7 +5,13 @@ import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Download, Share, Copy, ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from '@phosphor-icons/react'
+import { Download } from '@phosphor-icons/react/dist/csr/Download'
+import { Share } from '@phosphor-icons/react/dist/csr/Share'
+import { Copy } from '@phosphor-icons/react/dist/csr/Copy'
+import { ArrowSquareOut } from '@phosphor-icons/react/dist/csr/ArrowSquareOut'
+import { ArrowsDownUp } from '@phosphor-icons/react/dist/csr/ArrowsDownUp'
+import { ArrowUp } from '@phosphor-icons/react/dist/csr/ArrowUp'
+import { ArrowDown } from '@phosphor-icons/react/dist/csr/ArrowDown'
 import { toast } from 'sonner'
 import { ParsedCSVData } from '@/lib/contentManager'
 
@@ -201,7 +207,7 @@ export function DataTable({
                       onClick={handleViewStandalone}
                       className="flex-1"
                     >
-                      <ExternalLink className="w-4 h-4 mr-2" />
+                      <ArrowSquareOut className="w-4 h-4 mr-2" />
                       View Standalone
                     </Button>
                   </div>
@@ -255,10 +261,10 @@ export function DataTable({
                               ) : sortDirection === 'desc' ? (
                                 <ArrowDown className="w-3 h-3" />
                               ) : (
-                                <ArrowUpDown className="w-3 h-3 opacity-50" />
+                                <ArrowsDownUp className="w-3 h-3 opacity-50" />
                               )
                             ) : (
-                              <ArrowUpDown className="w-3 h-3 opacity-30" />
+                              <ArrowsDownUp className="w-3 h-3 opacity-30" />
                             )}
                           </div>
                         )}

@@ -1,7 +1,11 @@
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { TrendUp, BarChart, PieChart, LineChart, Scatter } from '@phosphor-icons/react'
+import { TrendUp } from '@phosphor-icons/react/dist/csr/TrendUp'
+import { ChartBar } from '@phosphor-icons/react/dist/csr/ChartBar'
+import { ChartPie } from '@phosphor-icons/react/dist/csr/ChartPie'
+import { ChartLine } from '@phosphor-icons/react/dist/csr/ChartLine'
+import { ChartScatter } from '@phosphor-icons/react/dist/csr/ChartScatter'
 
 interface TemplateShowcaseProps {
   className?: string
@@ -11,25 +15,25 @@ export function TemplateShowcase({ className = '' }: TemplateShowcaseProps) {
   const chartTypes = [
     {
       name: 'Line Charts',
-      icon: LineChart,
+      icon: ChartLine,
       description: 'Time series and trend analysis',
       features: ['Smooth curves', 'Multi-series support', 'Interactive hover']
     },
     {
       name: 'Bar Charts',
-      icon: BarChart,
+      icon: ChartBar,
       description: 'Categorical data comparison',
       features: ['Grouped bars', 'Custom colors', 'Data labels']
     },
     {
       name: 'Pie Charts',
-      icon: PieChart,
+      icon: ChartPie,
       description: 'Proportional data visualization',
       features: ['Donut mode', 'Custom segments', 'Legend positioning']
     },
     {
       name: 'Scatter Plots',
-      icon: Scatter,
+      icon: ChartScatter,
       description: 'Correlation and distribution analysis',
       features: ['Bubble sizing', 'Color coding', 'Trend lines']
     }

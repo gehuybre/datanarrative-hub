@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { Download, Share, Code, Copy, ExternalLink } from '@phosphor-icons/react'
+import { Download } from '@phosphor-icons/react/dist/csr/Download'
+import { Share } from '@phosphor-icons/react/dist/csr/Share'  
+import { Code } from '@phosphor-icons/react/dist/csr/Code'
+import { Copy } from '@phosphor-icons/react/dist/csr/Copy'
+import { ArrowSquareOut } from '@phosphor-icons/react/dist/csr/ArrowSquareOut'
 import { applyLayout, applyTraceDefaults, ChartType, registerAuroraBorealisTemplate } from '@/lib/plotly-config'
 import { charts as chartConfig } from '@/lib/config'
 import { useUserPreferences } from '@/hooks/use-preferences'
@@ -145,8 +149,8 @@ export function ChartContainer({
             className="quick-action-btn"
             title="Export chart as image"
           >
-            <Download className="w-4 h-4" />
-            <span className="ml-1">PNG</span>
+            <Download className="w-4 h-4 mr-2" />
+            PNG
           </Button>
           
           {csvData && csvFilename && (
@@ -157,8 +161,8 @@ export function ChartContainer({
               className="quick-action-btn"
               title="Download data as CSV"
             >
-              <Download className="w-4 h-4" />
-              <span className="ml-1">CSV</span>
+              <Download className="w-4 h-4 mr-2" />
+              CSV
             </Button>
           )}
           
@@ -170,8 +174,8 @@ export function ChartContainer({
                 className="quick-action-btn"
                 title="Get embed code"
               >
-                <Share className="w-4 h-4" />
-                <span className="ml-1">Embed</span>
+                <Share className="w-4 h-4 mr-2" />
+                Embed
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
@@ -194,7 +198,7 @@ export function ChartContainer({
                     </Button>
                     <Button variant="outline" size="sm" asChild>
                       <a href={`/embed/chart/${reportId}/${chartId}`} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4 mr-2" />
+                        <ArrowSquareOut className="w-4 h-4 mr-2" />
                         Preview
                       </a>
                     </Button>
