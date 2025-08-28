@@ -14,14 +14,13 @@ import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { toast } from 'sonner'
 import { colors } from '@/lib/colors'
 import { 
-  loadReportConfig, 
   loadReportContent, 
   ReportConfig,
   ChartConfig,
   TableConfig,
   ParsedCSVData
 } from '@/lib/contentManager'
-import { loadCSVDataFromMap, loadRawCSVFromMap } from '@/lib/dataLoader'
+import { loadCSVDataFromMap, loadRawCSVFromMap, loadReportConfigFromMap } from '@/lib/dataLoader'
 
 interface ReportViewerProps {
   reportId: string
@@ -40,7 +39,7 @@ export function ReportViewer({ reportId, onBack }: ReportViewerProps) {
       setLoading(true)
       try {
         // Load report configuration
-        const config = await loadReportConfig(reportId)
+        const config = await loadReportConfigFromMap(reportId)
         if (!config) {
           toast.error('Report not found')
           onBack()

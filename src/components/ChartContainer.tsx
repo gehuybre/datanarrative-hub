@@ -76,7 +76,8 @@ export function ChartContainer({
   const finalData = applyTraceDefaults(data, chartType === 'multiline' || chartType === 'trendlines' ? 'line' : chartType)
   
   // Generate embed code
-  const embedCode = `<iframe src="${window.location.origin}/embed/chart/${reportId}/${chartId}" width="800" height="600" frameborder="0"></iframe>`
+  const basename = import.meta.env.MODE === 'production' ? '/datanarrative-hub' : ''
+  const embedCode = `<iframe src="${window.location.origin}${basename}/embed/chart/${reportId}/${chartId}" width="800" height="600" frameborder="0"></iframe>`
 
   const handleDownloadImage = useCallback(() => {
     if (plotRef.current && window.Plotly) {
@@ -197,7 +198,7 @@ export function ChartContainer({
                       Copy Code
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <a href={`/embed/chart/${reportId}/${chartId}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`${import.meta.env.MODE === 'production' ? '/datanarrative-hub' : ''}/embed/chart/${reportId}/${chartId}`} target="_blank" rel="noopener noreferrer">
                         <ArrowSquareOut className="w-4 h-4 mr-2" />
                         Preview
                       </a>

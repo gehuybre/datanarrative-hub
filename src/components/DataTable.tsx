@@ -120,8 +120,9 @@ export function DataTable({
   }, [sortColumn, sortDirection])
   
   // Generate embed code
+  const basename = import.meta.env.MODE === 'production' ? '/datanarrative-hub' : ''
   const embedCode = `<iframe 
-  src="${window.location.origin}/embed/table/${reportId}/${tableId}" 
+  src="${window.location.origin}${basename}/embed/table/${reportId}/${tableId}" 
   width="100%" 
   height="400" 
   frameborder="0"
@@ -152,7 +153,8 @@ export function DataTable({
   }
 
   const handleViewStandalone = () => {
-    const url = `/embed/table/${reportId}/${tableId}`
+    const basename = import.meta.env.MODE === 'production' ? '/datanarrative-hub' : ''
+    const url = `${basename}/embed/table/${reportId}/${tableId}`
     window.open(url, '_blank')
   }
 

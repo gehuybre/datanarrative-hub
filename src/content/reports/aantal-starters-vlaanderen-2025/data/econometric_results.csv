@@ -1,0 +1,8 @@
+metric,value,interpretation,significance
+"DiD Effect",4993,"Extra oprichtingen per jaar in Vlaamse bouwsector","***"
+"Percentage Effect",81,"Relatieve toename t.o.v. voorperiode (%)","***"
+"P-waarde",0.0013,"Statistische significantie","< 0.01"
+"Lower CI",2094,"Ondergrens 95% betrouwbaarheidsinterval","Significant"
+"Upper CI",7892,"Bovengrens 95% betrouwbaarheidsinterval","Significant"
+"Parallel Trends Test",0.6218,"Validatie van DiD assumptie","Niet significant (✓)"
+"R-squared",84.7,"Verklaarde variantie van het model (%)","Hoge fit"

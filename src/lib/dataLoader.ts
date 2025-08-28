@@ -1,6 +1,6 @@
 // Centralized data loader to handle CSV imports explicitly
 
-import { parseCSV, ParsedCSVData } from './contentManager'
+import { parseCSV, ParsedCSVData, ReportConfig } from './contentManager'
 
 // Import all CSV files explicitly using static imports
 // Market Segmentation Study
@@ -18,6 +18,19 @@ import featureAdoptionRaw from '@/content/reports/user-engagement-metrics/data/f
 // Vergunningen 2025
 import graphDataExportRaw from '@/content/reports/vergunningen-2025/data/graph_data_export.csv?raw'
 
+// Aantal Starters Vlaanderen 2025
+import didSummaryRaw from '@/content/reports/aantal-starters-vlaanderen-2025/data/did_summary.csv?raw'
+import econometricResultsRaw from '@/content/reports/aantal-starters-vlaanderen-2025/data/econometric_results.csv?raw'
+import economicFactorsRaw from '@/content/reports/aantal-starters-vlaanderen-2025/data/economic_factors.csv?raw'
+import gereglementeerdeSectorenRaw from '@/content/reports/aantal-starters-vlaanderen-2025/data/gereglementeerde_sectoren.csv?raw'
+
+// Import all config files
+import marketSegmentationConfig from '@/content/reports/market-segmentation-study/config.json'
+import salesPerformanceConfig from '@/content/reports/sales-performance-q1-2024/config.json'
+import userEngagementConfig from '@/content/reports/user-engagement-metrics/config.json'
+import vergunningenConfig from '@/content/reports/vergunningen-2025/config.json'
+import aantalStartersVlaanderenConfig from '@/content/reports/aantal-starters-vlaanderen-2025/config.json'
+
 // Create a lookup map for the data files
 const dataFilesMap: Record<string, string> = {
   'market-segmentation-study/market-segments.csv': marketSegmentsRaw,
@@ -27,6 +40,19 @@ const dataFilesMap: Record<string, string> = {
   'user-engagement-metrics/user-engagement.csv': userEngagementRaw,
   'user-engagement-metrics/feature-adoption.csv': featureAdoptionRaw,
   'vergunningen-2025/graph_data_export.csv': graphDataExportRaw,
+  'aantal-starters-vlaanderen-2025/did_summary.csv': didSummaryRaw,
+  'aantal-starters-vlaanderen-2025/econometric_results.csv': econometricResultsRaw,
+  'aantal-starters-vlaanderen-2025/economic_factors.csv': economicFactorsRaw,
+  'aantal-starters-vlaanderen-2025/gereglementeerde_sectoren.csv': gereglementeerdeSectorenRaw,
+}
+
+// Create a lookup map for config files
+const configFilesMap: Record<string, any> = {
+  'market-segmentation-study': marketSegmentationConfig,
+  'sales-performance-q1-2024': salesPerformanceConfig,
+  'user-engagement-metrics': userEngagementConfig,
+  'vergunningen-2025': vergunningenConfig,
+  'aantal-starters-vlaanderen-2025': aantalStartersVlaanderenConfig,
 }
 
 export function loadCSVDataFromMap(reportId: string, filename: string): Promise<ParsedCSVData | null> {
@@ -45,6 +71,25 @@ export function loadCSVDataFromMap(reportId: string, filename: string): Promise<
       resolve(parsed)
     } catch (error) {
       console.error(`Failed to load CSV data for ${reportId}/${filename}:`, error)
+      resolve(null)
+    }
+  })
+}
+
+export function loadReportConfigFromMap(reportId: string): Promise<any | null> {
+  return new Promise((resolve) => {
+    try {
+      const config = configFilesMap[reportId]
+      
+      if (!config) {
+        console.error(`No config found for reportId: ${reportId}`)
+        resolve(null)
+        return
+      }
+      
+      resolve(config)
+    } catch (error) {
+      console.error(`Failed to load config for ${reportId}:`, error)
       resolve(null)
     }
   })

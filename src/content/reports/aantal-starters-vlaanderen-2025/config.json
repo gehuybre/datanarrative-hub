@@ -1,0 +1,120 @@
+{
+  "id": "aantal-starters-vlaanderen-2025",
+  "title": "Ontwikkeling Starters in de Bouwsector Vlaanderen 2019-2022",
+  "subtitle": "Econometrische analyse van bedrijfsoprichtingen in de Vlaamse bouwsector",
+  "author": "Economisch Research Team",
+  "publishDate": "2025-08-28",
+  "readTime": "18 min read",
+  "tags": ["Vlaanderen", "Bouwsector", "Ondernemerschap", "Econometrie", "DiD Analyse"],
+  "contentFile": "content.md",
+  "dataFiles": [
+    {
+      "filename": "jaar_alle_sectoren.json",
+      "title": "Jaarcijfers Alle Sectoren",
+      "description": "Jaarlijkse oprichtings- en schrappingsdata voor alle economische sectoren per gewest"
+    },
+    {
+      "filename": "jaarcijfers.json",
+      "title": "Detailjaarcijfers",
+      "description": "Gedetailleerde jaarlijkse bedrijfsstatistieken"
+    },
+    {
+      "filename": "maandcijfers.json",
+      "title": "Maandstatistieken",
+      "description": "Maandelijkse bedrijfsdemografie gegevens"
+    },
+    {
+      "filename": "gereglementeerde_sectoren.csv",
+      "title": "Gereglementeerde Sectoren",
+      "description": "Overzicht van sectoren met specifieke regelgeving en vereiste beroepen"
+    },
+    {
+      "filename": "did_summary.csv",
+      "title": "DiD Analyse Samenvatting",
+      "description": "Samenvattende resultaten van de difference-in-differences analyse"
+    },
+    {
+      "filename": "econometric_results.csv",
+      "title": "Econometrische Resultaten",
+      "description": "Statistische resultaten en significantietoetsen van de DiD analyse"
+    },
+    {
+      "filename": "economic_factors.csv",
+      "title": "Economische Verklarende Factoren",
+      "description": "Mogelijke oorzaken en verklaringen voor de geobserveerde toename"
+    }
+  ],
+  "charts": [
+    {
+      "id": "did-comparison-bar",
+      "title": "DiD Analyse: Voor vs Na 2019",
+      "type": "bar",
+      "dataFile": "did_summary.csv",
+      "config": {
+        "x": "group_label",
+        "y": "aantal_oprichtingen",
+        "color": "periode",
+        "barmode": "group",
+        "xaxis": { "title": "Groep" },
+        "yaxis": { "title": "Gemiddeld Aantal Oprichtingen" },
+        "title": "Vergelijking Behandeling vs Controle Groepen"
+      }
+    },
+    {
+      "id": "econometric-results-table",
+      "title": "Econometrische Resultaten",
+      "type": "bar",
+      "dataFile": "econometric_results.csv",
+      "config": {
+        "x": "metric",
+        "y": "value",
+        "xaxis": { "title": "Statistische Maatstaf" },
+        "yaxis": { "title": "Waarde" }
+      }
+    },
+    {
+      "id": "economic-factors-impact",
+      "title": "Verklarende Factoren naar Impact",
+      "type": "bar",
+      "dataFile": "economic_factors.csv",
+      "config": {
+        "x": "factor",
+        "y": "impact_score",
+        "color": "category",
+        "xaxis": { "title": "Verklarende Factor" },
+        "yaxis": { "title": "Impact Score (1=Laag, 2=Gemiddeld, 3=Hoog)" }
+      }
+    }
+  ],
+  "tables": [
+    {
+      "id": "did-summary-table",
+      "title": "DiD Analyse Samenvatting",
+      "dataFile": "did_summary.csv",
+      "description": "Overzicht van de behandelings- en controlegroepen voor en na 2019"
+    },
+    {
+      "id": "econometric-results-table",
+      "title": "Econometrische Resultaten",
+      "dataFile": "econometric_results.csv", 
+      "description": "Statistische resultaten van de difference-in-differences analyse"
+    },
+    {
+      "id": "economic-factors-table",
+      "title": "Verklarende Factoren",
+      "dataFile": "economic_factors.csv",
+      "description": "Mogelijke oorzaken en verklaringen voor de geobserveerde toename"
+    }
+  ],
+  "summary": {
+    "keyFindings": [
+      "Significante stijging van +4.993 oprichtingen per jaar in Vlaamse bouwsector vanaf 2019",
+      "Relatieve toename van 81% ten opzichte van de voorperiode (2015-2018)",
+      "Statistische significantie met p-waarde van 0.0013",
+      "Effect is specifiek voor Vlaanderen en de bouwsector"
+    ],
+    "methodology": "Difference-in-Differences econometrische analyse",
+    "dataSource": "Officiële bedrijfsdemografie statistieken België",
+    "timePeriod": "2015-2022"
+  }
+}

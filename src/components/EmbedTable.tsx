@@ -60,10 +60,10 @@ export function EmbedTable() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-card flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading table...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-400 mx-auto mb-4"></div>
+          <p className="text-gray-300">Loading table...</p>
         </div>
       </div>
     )
@@ -71,10 +71,10 @@ export function EmbedTable() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-card flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-destructive text-lg font-medium mb-2">Error</p>
-          <p className="text-muted-foreground">{error}</p>
+          <p className="text-red-400 text-lg font-medium mb-2">Error</p>
+          <p className="text-gray-300">{error}</p>
         </div>
       </div>
     )
@@ -82,8 +82,8 @@ export function EmbedTable() {
 
   if (!tableData) {
     return (
-      <div className="min-h-screen bg-card flex items-center justify-center">
-        <p className="text-muted-foreground">No table data available</p>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <p className="text-gray-300">No table data available</p>
       </div>
     )
   }
@@ -93,9 +93,9 @@ export function EmbedTable() {
   const displayData = data.data.slice(0, 100) // Limit to first 100 rows for embedding
 
   return (
-    <div className="min-h-screen bg-card p-4">
+    <div className="min-h-screen bg-gray-900 p-4">
       <div className="w-full">
-        <h2 className="text-xl font-semibold mb-4 text-foreground">{config.title}</h2>
+        <h2 className="text-xl font-semibold mb-4 text-white">{config.title}</h2>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>

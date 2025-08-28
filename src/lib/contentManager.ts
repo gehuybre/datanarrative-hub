@@ -145,7 +145,8 @@ export function getAvailableReports(): string[] {
     'sales-performance-q1-2024',
     'market-segmentation-study', 
     'user-engagement-metrics',
-    'vergunningen-2025'
+    'vergunningen-2025',
+    'aantal-starters-vlaanderen-2025'
   ]
 }
 
